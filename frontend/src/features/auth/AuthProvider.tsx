@@ -13,77 +13,23 @@ import {
 } from "../../lib/api/client";
 
 import {
-  clearAnonymousEndpointSession,
-  getAnonymousEndpointSession,
-} from "../endpoints/anonymousSession";
+  readApiError,
+} from "../../lib/api/errors";
 
 import {
   AuthContext,
   type User,
 } from "./AuthContext";
 
+import {
+  clearAnonymousEndpointSession,
+  getAnonymousEndpointSession,
+} from "../endpoints/anonymousSession";
+
+
 interface AuthResponse {
   access: string;
   user: User;
-}
-
-
-async function readError(
-  response: Response,
-): Promise<string> {
-  const fallback = `Request failed (${response.status}).`;
-
-  let body: unknown;
-
-  try {
-    body = await response.json();
-  } catch {
-    return fallback;
-  }
-
-  if (
-    typeof body !== "object"
-    || body === null
-    || Array.isArray(body)
-  ) {
-    return fallback;
-  }
-
-  const errors =
-    body as Record<string, unknown>;
-
-  if (
-    typeof errors.detail === "string"
-  ) {
-    return errors.detail;
-  }
-
-  const nonFieldErrors =
-    errors.non_field_errors;
-
-  if (
-    Array.isArray(nonFieldErrors)
-    && typeof nonFieldErrors[0] === "string"
-  ) {
-    return nonFieldErrors[0];
-  }
-
-  for (
-    const value of Object.values(errors)
-  ) {
-    if (typeof value === "string") {
-      return value;
-    }
-
-    if (
-      Array.isArray(value)
-      && typeof value[0] === "string"
-    ) {
-      return value[0];
-    }
-  }
-
-  return fallback;
 }
 
 
@@ -99,6 +45,7 @@ export function AuthProvider({
     useState(true);
 
   const restored = useRef(false);
+
 
   useEffect(() => {
     if (restored.current) {
@@ -160,11 +107,12 @@ export function AuthProvider({
 
     if (!response.ok) {
       throw new Error(
-        await readError(response),
+        await readApiError(response),
       );
     }
 
-    const data = (await response.json()) as AuthResponse;
+    const data =
+      (await response.json()) as AuthResponse;
 
     setAccessToken(data.access);
     setUser(data.user);
@@ -192,11 +140,12 @@ export function AuthProvider({
 
     if (!response.ok) {
       throw new Error(
-        await readError(response),
+        await readApiError(response),
       );
     }
 
-    const data = (await response.json()) as AuthResponse;
+    const data =
+      (await response.json()) as AuthResponse;
 
     setAccessToken(data.access);
     setUser(data.user);

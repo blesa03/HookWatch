@@ -20,6 +20,7 @@ ALLOWED_METHODS = (
 
 
 def _error_response(
+    code: str,
     message: str,
     *,
     status: int,
@@ -27,6 +28,7 @@ def _error_response(
     return JsonResponse(
         {
             "error": {
+                "code": code,
                 "message": message,
             }
         },
@@ -189,6 +191,7 @@ def ingest_webhook(
 ) -> JsonResponse:
     if request.method not in ALLOWED_METHODS:
         response = _error_response(
+            "method_not_allowed",
             "Method not allowed.",
             status=405,
         )
@@ -205,6 +208,7 @@ def ingest_webhook(
 
     if endpoint is None:
         return _error_response(
+            "endpoint_not_found",
             "Endpoint not found.",
             status=404,
         )
@@ -214,12 +218,14 @@ def ingest_webhook(
         != Endpoint.State.ACTIVE
     ):
         return _error_response(
+            "endpoint_not_found",
             "Endpoint not found.",
             status=404,
         )
 
     if endpoint.is_expired:
         return _error_response(
+            "endpoint_expired",
             "Endpoint expired.",
             status=410,
         )
@@ -228,6 +234,7 @@ def ingest_webhook(
 
     if body is None:
         return _error_response(
+            "payload_too_large",
             "Payload too large.",
             status=413,
         )
