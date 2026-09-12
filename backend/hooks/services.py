@@ -4,6 +4,9 @@ from django.db import transaction
 from django.utils import timezone
 
 from .models import Endpoint
+from .realtime.events import (
+    queue_endpoint_disconnect,
+)
 from .tokens import (
     generate_management_token,
     hash_token,
@@ -85,6 +88,11 @@ def adopt_temporary_endpoint(
             "management_token_hash",
             "updated_at",
         ]
+    )
+
+    queue_endpoint_disconnect(
+        endpoint.id,
+        reason="access_changed",
     )
 
     return endpoint

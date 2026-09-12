@@ -1,5 +1,8 @@
 from django.urls import path
 
+from .realtime.views import (
+    WebSocketTicketView,
+)
 from .views import (
     AdoptEndpointView,
     AnonymousEndpointCreateView,
@@ -54,5 +57,10 @@ urlpatterns = [
         ),
         EndpointRequestListView.as_view(),
         name="endpoint-request-list",
+    ),
+    path(
+        "ws/tickets/",
+        WebSocketTicketView.as_view(),
+        name="websocket-ticket",
     ),
 ]

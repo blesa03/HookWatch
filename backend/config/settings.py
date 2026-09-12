@@ -29,6 +29,8 @@ ALLOWED_HOSTS = [
 
 
 INSTALLED_APPS = [
+    "daphne",
+    "channels",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -235,4 +237,39 @@ HOOKWATCH_MAX_BODY_SIZE = int(
 
 DATA_UPLOAD_MAX_MEMORY_SIZE = (
     HOOKWATCH_MAX_BODY_SIZE
+)
+
+REDIS_URL = os.getenv(
+    "REDIS_URL",
+    "redis://localhost:6379/0",
+)
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": (
+            "channels_redis.core."
+            "RedisChannelLayer"
+        ),
+        "CONFIG": {
+            "hosts": [REDIS_URL],
+            "prefix": "hookwatch:channels",
+            "group_expiry": 3600,
+        },
+    },
+}
+
+WEBSOCKET_ALLOWED_ORIGINS = [
+    origin.strip()
+    for origin in os.getenv(
+        "WEBSOCKET_ALLOWED_ORIGINS",
+        "http://localhost:5173",
+    ).split(",")
+    if origin.strip()
+]
+
+HOOKWATCH_WS_TICKET_TTL = int(
+    os.getenv(
+        "HOOKWATCH_WS_TICKET_TTL",
+        "30",
+    )
 )

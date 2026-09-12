@@ -9,6 +9,9 @@ from django.http import (
 from django.views.decorators.csrf import csrf_exempt
 
 from .models import Endpoint, WebhookRequest
+from .realtime.events import (
+    queue_webhook_received,
+)
 
 ALLOWED_METHODS = (
     "GET",
@@ -266,6 +269,10 @@ def ingest_webhook(
                     request
                 ),
             )
+        )
+        
+        queue_webhook_received(
+            captured_request
         )
 
     return JsonResponse(

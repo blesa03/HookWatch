@@ -1,5 +1,6 @@
 from uuid import UUID
 
+from django.db import transaction
 from django.db.models import Q
 from rest_framework import status
 from rest_framework.exceptions import NotFound
@@ -17,6 +18,11 @@ from .access import (
 )
 from .models import WebhookRequest
 from .pagination import RequestCursorPagination
+from .realtime.events import (
+    queue_endpoint_closed,
+    queue_request_deleted,
+    queue_requests_cleared,
+)
 from .serializers import (
     AdoptEndpointSerializer,
     EndpointCreateSerializer,
@@ -235,7 +241,14 @@ class EndpointDetailView(APIView):
             endpoint_id,
         )
 
-        endpoint.delete()
+        endpoint_id = endpoint.id
+
+        with transaction.atomic():
+            endpoint.delete()
+
+            queue_endpoint_closed(
+                endpoint_id
+            )
 
         return Response(
             status=status.HTTP_204_NO_CONTENT
@@ -389,6 +402,18 @@ class EndpointRequestDetailView(
             )
         )
 
+        with transaction.atomic():
+            captured_request.delete()
+
+            queue_request_deleted(
+                endpoint.id,
+                request_id,
+            )
+
+        return Response(
+            status=status.HTTP_204_NO_CONTENT
+        )
+
         captured_request.delete()
 
         return Response(
@@ -411,9 +436,17 @@ class EndpointRequestClearView(
             endpoint_id,
         )
 
-        deleted_count, _ = (
-            endpoint.requests.all().delete()
-        )
+        with transaction.atomic():
+            deleted_count, _ = (
+                endpoint.requests
+                .all()
+                .delete()
+            )
+
+            queue_requests_cleared(
+                endpoint.id,
+                deleted_count,
+            )
 
         return Response(
             {
