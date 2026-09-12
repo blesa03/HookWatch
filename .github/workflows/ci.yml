@@ -27,7 +27,7 @@ jobs:
           --health-retries 10
 
     env:
-      DJANGO_SECRET_KEY: ci-secret-key
+      DJANGO_SECRET_KEY: hookwatch-ci-secret-key-long-enough-for-hs256-tests
       DJANGO_DEBUG: "false"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
       POSTGRES_DB: hookwatch

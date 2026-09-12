@@ -1,69 +1,106 @@
-import { useEffect, useState } from "react";
+import {
+  Link,
+  Route,
+  Routes,
+} from "react-router-dom";
 
-type ApiStatus = "checking" | "online" | "offline";
+import {
+  LoginPage,
+} from "./features/auth/LoginPage";
+import {
+  ProtectedRoute,
+} from "./features/auth/ProtectedRoute";
+import {
+  RegisterPage,
+} from "./features/auth/RegisterPage";
+import {
+  useAuth,
+} from "./features/auth/useAuth";
 
-const API_BASE_URL =
-  import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
-function App() {
-  const [apiStatus, setApiStatus] =
-    useState<ApiStatus>("checking");
-
-  useEffect(() => {
-    const checkApi = async () => {
-      try {
-        const response = await fetch(
-          `${API_BASE_URL}/api/v1/health/`,
-        );
-
-        if (!response.ok) {
-          throw new Error("API health check failed");
-        }
-
-        setApiStatus("online");
-      } catch {
-        setApiStatus("offline");
-      }
-    };
-
-    void checkApi();
-  }, []);
-
+function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-zinc-950 px-6 text-zinc-100">
-      <section className="w-full max-w-xl rounded-lg border border-zinc-800 bg-zinc-900 p-8">
-        <p className="mb-2 font-mono text-sm text-emerald-400">
-          HookWatch
-        </p>
+    <main className="p-8">
+      <h1 className="text-3xl font-semibold">
+        HookWatch
+      </h1>
 
-        <h1 className="text-3xl font-semibold">
-          Project bootstrap
-        </h1>
+      <p className="mt-3">
+        Real-time webhook inspector.
+      </p>
 
-        <p className="mt-3 text-zinc-400">
-          React + TypeScript frontend connected to the
-          Django API.
-        </p>
+      <div className="mt-6 flex gap-4">
+        <Link to="/login">
+          Sign in
+        </Link>
 
-        <div className="mt-8 flex items-center gap-3 border-t border-zinc-800 pt-6">
-          <span
-            className={[
-              "h-2.5 w-2.5 rounded-full",
-              apiStatus === "online"
-                ? "bg-emerald-400"
-                : apiStatus === "offline"
-                  ? "bg-red-400"
-                  : "bg-amber-400",
-            ].join(" ")}
-          />
-
-          <span className="font-mono text-sm text-zinc-300">
-            API: {apiStatus}
-          </span>
-        </div>
-      </section>
+        <Link to="/register">
+          Create account
+        </Link>
+      </div>
     </main>
   );
 }
+
+
+function AppPlaceholder() {
+  const {
+    user,
+    logout,
+  } = useAuth();
+
+  return (
+    <main className="p-8">
+      <h1 className="text-2xl font-semibold">
+        HookWatch session
+      </h1>
+
+      <p className="mt-4">
+        Signed in as {user?.email}
+      </p>
+
+      <button
+        className="mt-6 rounded border px-4 py-2"
+        onClick={() => {
+          void logout();
+        }}
+      >
+        Sign out
+      </button>
+    </main>
+  );
+}
+
+
+function App() {
+  return (
+    <Routes>
+      <Route
+        path="/"
+        element={<HomePage />}
+      />
+
+      <Route
+        path="/login"
+        element={<LoginPage />}
+      />
+
+      <Route
+        path="/register"
+        element={<RegisterPage />}
+      />
+
+      <Route
+        element={<ProtectedRoute />}
+      >
+        <Route
+          path="/app"
+          element={<AppPlaceholder />}
+        />
+      </Route>
+    </Routes>
+  );
+}
+
 
 export default App;
