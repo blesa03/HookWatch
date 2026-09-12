@@ -29,4 +29,8 @@ urlpatterns = [
         "api/v1/",
         include("hooks.urls"),
     ),
+    path(
+        "hooks/",
+        include("hooks.ingest_urls"),
+    ),
 ]
