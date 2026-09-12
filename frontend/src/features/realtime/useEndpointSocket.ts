@@ -251,7 +251,7 @@ export function useEndpointSocket(
         };
 
 
-        socket.onclose = () => {
+        socket.onclose = (event) => {
           socket = null;
 
           if (
@@ -261,7 +261,21 @@ export function useEndpointSocket(
             return;
           }
 
-          scheduleReconnect();
+          if (
+            event.code === 4401
+            || event.code === 4001
+            || event.code === 4004
+          ) {
+            reconnectEnabled = false;
+
+            setStatus(
+            "disconnected",
+            );
+
+            return;
+          }
+
+        scheduleReconnect();
         };
       } catch (error) {
         if (stopped) {

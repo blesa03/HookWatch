@@ -13,60 +13,58 @@ import {
 import {
   RegisterPage,
 } from "./features/auth/RegisterPage";
+
 import {
-  useAuth,
-} from "./features/auth/useAuth";
+  AppHomePage,
+} from "./features/endpoints/AppHomePage";
+import {
+  WorkspacePage,
+} from "./features/endpoints/WorkspacePage";
 
 
 function HomePage() {
   return (
-    <main className="p-8">
-      <h1 className="text-3xl font-semibold">
+    <main
+      className={
+        "min-h-screen bg-zinc-950 "
+        + "p-8 text-zinc-100"
+      }
+    >
+      <h1
+        className={
+          "text-3xl font-semibold"
+        }
+      >
         HookWatch
       </h1>
 
-      <p className="mt-3">
+      <p
+        className={
+          "mt-3 text-zinc-500"
+        }
+      >
         Real-time webhook inspector.
       </p>
 
-      <div className="mt-6 flex gap-4">
-        <Link to="/login">
+      <div
+        className={
+          "mt-6 flex gap-4"
+        }
+      >
+        <Link
+          className="text-cyan-400"
+          to="/login"
+        >
           Sign in
         </Link>
 
-        <Link to="/register">
+        <Link
+          className="text-cyan-400"
+          to="/register"
+        >
           Create account
         </Link>
       </div>
-    </main>
-  );
-}
-
-
-function AppPlaceholder() {
-  const {
-    user,
-    logout,
-  } = useAuth();
-
-  return (
-    <main className="p-8">
-      <h1 className="text-2xl font-semibold">
-        HookWatch session
-      </h1>
-
-      <p className="mt-4">
-        Signed in as {user?.email}
-      </p>
-
-      <button
-        className="mt-6 rounded border px-4 py-2"
-        onClick={() => {
-          void logout();
-        }}
-      >
-        Sign out
-      </button>
     </main>
   );
 }
@@ -95,7 +93,17 @@ function App() {
       >
         <Route
           path="/app"
-          element={<AppPlaceholder />}
+          element={<AppHomePage />}
+        />
+
+        <Route
+          path={
+            "/app/endpoints/"
+            + ":endpointId"
+          }
+          element={
+            <WorkspacePage />
+          }
         />
       </Route>
     </Routes>
