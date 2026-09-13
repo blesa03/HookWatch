@@ -39,3 +39,8 @@ export interface CursorPage<T> {
   previous: string | null;
   results: T[];
 }
+
+export interface RequestFilters {
+  search: string;
+  method: string;
+}

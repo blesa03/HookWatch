@@ -1,5 +1,6 @@
 import base64
 
+from django.conf import settings
 from rest_framework import serializers
 
 from .models import Endpoint, WebhookRequest
@@ -260,3 +261,46 @@ class RequestFilterSerializer(
             )
 
         return attrs
+
+class EndpointTestSerializer(
+    serializers.Serializer
+):
+    method = serializers.ChoiceField(
+        choices=(
+            "GET",
+            "POST",
+            "PUT",
+            "PATCH",
+            "DELETE",
+        ),
+        default="POST",
+    )
+
+    content_type = serializers.CharField(
+        max_length=255,
+        default="application/json",
+    )
+
+    body = serializers.CharField(
+        required=False,
+        allow_blank=True,
+        default=(
+            '{"event":"hookwatch.test"}'
+        ),
+    )
+
+    def validate_body(self, value):
+        size = len(
+            value.encode("utf-8")
+        )
+
+        if (
+            size
+            > settings.HOOKWATCH_MAX_BODY_SIZE
+        ):
+            raise serializers.ValidationError(
+                "Test body exceeds the "
+                "maximum payload size."
+            )
+
+        return value

@@ -11,6 +11,7 @@ from .views import (
     EndpointRequestClearView,
     EndpointRequestDetailView,
     EndpointRequestListView,
+    EndpointTestView,
 )
 
 urlpatterns = [
@@ -33,6 +34,11 @@ urlpatterns = [
         "endpoints/<uuid:endpoint_id>/",
         EndpointDetailView.as_view(),
         name="endpoint-detail",
+    ),
+    path(
+        "endpoints/<uuid:endpoint_id>/test/",
+        EndpointTestView.as_view(),
+        name="endpoint-test",
     ),
     path(
         (

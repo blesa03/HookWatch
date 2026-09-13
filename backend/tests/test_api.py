@@ -1,4 +1,5 @@
 import base64
+from unittest.mock import patch
 
 import pytest
 
@@ -423,3 +424,113 @@ def test_validation_errors_use_uniform_shape(
         "name"
         in response.data["error"]["fields"]
     )
+
+def test_owner_can_send_test_webhook(
+    api_client,
+    user,
+):
+    endpoint = create_endpoint(user)
+
+    api_client.force_authenticate(
+        user=user
+    )
+
+    with patch(
+        "hooks.views.send_test_webhook"
+    ) as sender:
+        sender.return_value = {
+            "status_code": 200,
+            "request_id": (
+                "11111111-1111-1111-"
+                "1111-111111111111"
+            ),
+        }
+
+        response = api_client.post(
+            (
+                f"/api/v1/endpoints/"
+                f"{endpoint.id}/test/"
+            ),
+            {
+                "method": "POST",
+                "content_type": (
+                    "application/json"
+                ),
+                "body": (
+                    '{"hello":"world"}'
+                ),
+            },
+            format="json",
+        )
+
+    assert response.status_code == 200
+
+    sender.assert_called_once_with(
+        endpoint=endpoint,
+        method="POST",
+        content_type=(
+            "application/json"
+        ),
+        body='{"hello":"world"}',
+    )
+
+
+def test_anonymous_endpoint_can_send_test(
+    api_client,
+):
+    endpoint, token = (
+        create_temporary_endpoint()
+    )
+
+    with patch(
+        "hooks.views.send_test_webhook"
+    ) as sender:
+        sender.return_value = {
+            "status_code": 200,
+            "request_id": None,
+        }
+
+        response = api_client.post(
+            (
+                f"/api/v1/endpoints/"
+                f"{endpoint.id}/test/"
+            ),
+            {
+                "method": "POST",
+            },
+            format="json",
+            HTTP_X_HOOKWATCH_MANAGEMENT_TOKEN=(
+                token
+            ),
+        )
+
+    assert response.status_code == 200
+
+
+def test_test_sender_rejects_other_user(
+    api_client,
+    user,
+):
+    other = User.objects.create_user(
+        email="sender-other@example.com",
+        password="StrongPassword123!",
+    )
+
+    endpoint = create_endpoint(other)
+
+    api_client.force_authenticate(
+        user=user
+    )
+
+    response = api_client.post(
+        (
+            f"/api/v1/endpoints/"
+            f"{endpoint.id}/test/"
+        ),
+        {
+            "method": "POST",
+        },
+        format="json",
+    )
+
+    assert response.status_code == 404

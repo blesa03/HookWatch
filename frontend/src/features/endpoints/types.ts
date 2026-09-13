@@ -16,3 +16,8 @@ export interface Endpoint {
   updated_at: string;
   expires_at: string | null;
 }
+
+export interface RequestFilters {
+  search: string;
+  method: string;
+}

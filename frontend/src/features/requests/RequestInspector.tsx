@@ -3,6 +3,7 @@ import {
 } from "react";
 import {
   LoaderCircle,
+  Trash2,
 } from "lucide-react";
 
 import {
@@ -39,6 +40,9 @@ interface RequestInspectorProps {
     Error | null;
 
   hasSelection: boolean;
+
+  onDelete?: () => void;
+  isDeleting?: boolean;
 }
 
 
@@ -109,6 +113,8 @@ export function RequestInspector({
   isLoading,
   error,
   hasSelection,
+  onDelete,
+  isDeleting,
 }: RequestInspectorProps) {
   const [
     tab,
@@ -231,6 +237,22 @@ export function RequestInspector({
           {request.path}
         </span>
       </div>
+
+      {onDelete && (
+        <button
+          type="button"
+          disabled={isDeleting}
+          onClick={onDelete}
+          className={
+            "ml-auto rounded-md "
+            + "p-2 text-zinc-600 "
+            + "hover:bg-zinc-900 "
+            + "hover:text-red-400"
+          }
+        >
+          <Trash2 className="size-4" />
+        </button>
+      )}
 
       <div
         className={

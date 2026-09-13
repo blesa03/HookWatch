@@ -2,6 +2,10 @@ import os
 from datetime import timedelta
 from pathlib import Path
 
+from corsheaders.defaults import (
+    default_headers,
+)
+
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -228,6 +232,11 @@ CORS_ALLOWED_ORIGINS = [
 
 CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOW_HEADERS = (
+    *default_headers,
+    "x-hookwatch-management-token",
+)
+
 HOOKWATCH_MAX_BODY_SIZE = int(
     os.getenv(
         "HOOKWATCH_MAX_BODY_SIZE",
@@ -271,5 +280,17 @@ HOOKWATCH_WS_TICKET_TTL = int(
     os.getenv(
         "HOOKWATCH_WS_TICKET_TTL",
         "30",
+    )
+)
+
+HOOKWATCH_INTERNAL_BASE_URL = os.getenv(
+    "HOOKWATCH_INTERNAL_BASE_URL",
+    "http://127.0.0.1:8000",
+)
+
+HOOKWATCH_TEST_REQUEST_TIMEOUT = float(
+    os.getenv(
+        "HOOKWATCH_TEST_REQUEST_TIMEOUT",
+        "5",
     )
 )

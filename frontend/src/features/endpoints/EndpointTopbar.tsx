@@ -2,6 +2,7 @@ import {
   Check,
   Copy,
   Radio,
+  Send,
 } from "lucide-react";
 import {
   useState,
@@ -18,6 +19,7 @@ import type {
 interface EndpointTopbarProps {
   endpoint: Endpoint;
   socketStatus: SocketStatus;
+  onSendTest: () => void;
 }
 
 
@@ -46,6 +48,7 @@ function statusLabel(
 export function EndpointTopbar({
   endpoint,
   socketStatus,
+  onSendTest,
 }: EndpointTopbarProps) {
   const [
     copied,
@@ -129,6 +132,22 @@ export function EndpointTopbar({
             socketStatus,
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={onSendTest}
+          className={
+            "inline-flex items-center "
+            + "gap-2 rounded-md "
+            + "border border-zinc-800 "
+            + "px-3 py-2 text-xs "
+            + "text-zinc-300 "
+            + "hover:bg-zinc-900"
+          }
+        >
+          <Send className="size-3.5" />
+          Send test
+        </button>
 
         <button
           type="button"

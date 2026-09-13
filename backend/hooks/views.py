@@ -3,7 +3,10 @@ from uuid import UUID
 from django.db import transaction
 from django.db.models import Q
 from rest_framework import status
-from rest_framework.exceptions import NotFound
+from rest_framework.exceptions import (
+    APIException,
+    NotFound,
+)
 from rest_framework.permissions import (
     AllowAny,
     IsAuthenticated,
@@ -27,6 +30,7 @@ from .serializers import (
     AdoptEndpointSerializer,
     EndpointCreateSerializer,
     EndpointSerializer,
+    EndpointTestSerializer,
     EndpointUpdateSerializer,
     RequestFilterSerializer,
     WebhookRequestDetailSerializer,
@@ -36,6 +40,10 @@ from .services import (
     EndpointAdoptionError,
     adopt_temporary_endpoint,
     create_temporary_endpoint,
+)
+from .webhook_sender import (
+    TestSendError,
+    send_test_webhook,
 )
 
 
@@ -255,6 +263,62 @@ class EndpointDetailView(APIView):
         )
 
 
+class TestSenderUnavailable(
+    APIException
+):
+    status_code = (
+        status.HTTP_502_BAD_GATEWAY
+    )
+    default_detail = (
+        "Test request failed."
+    )
+    default_code = "test_sender_failed"
+
+
+class EndpointTestView(APIView):
+    permission_classes = (AllowAny,)
+
+    def post(
+        self,
+        request,
+        endpoint_id,
+    ):
+        endpoint = get_accessible_endpoint(
+            request,
+            endpoint_id,
+        )
+
+        if (
+            endpoint.state
+            != endpoint.State.ACTIVE
+            or endpoint.is_expired
+        ):
+            raise NotFound(
+                "Endpoint not found."
+            )
+
+        serializer = (
+            EndpointTestSerializer(
+                data=request.data
+            )
+        )
+
+        serializer.is_valid(
+            raise_exception=True
+        )
+
+        try:
+            result = send_test_webhook(
+                endpoint=endpoint,
+                **serializer.validated_data,
+            )
+        except TestSendError as exc:
+            raise TestSenderUnavailable(
+                str(exc)
+            ) from exc
+
+        return Response(result)
+
 class EndpointRequestListView(APIView):
     permission_classes = (AllowAny,)
 
@@ -409,12 +473,6 @@ class EndpointRequestDetailView(
                 endpoint.id,
                 request_id,
             )
-
-        return Response(
-            status=status.HTTP_204_NO_CONTENT
-        )
-
-        captured_request.delete()
 
         return Response(
             status=status.HTTP_204_NO_CONTENT
