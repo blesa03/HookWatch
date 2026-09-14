@@ -1,7 +1,4 @@
 import {
-  useState,
-} from "react";
-import {
   LoaderCircle,
   Trash2,
 } from "lucide-react";
@@ -21,7 +18,7 @@ import type {
 } from "./types";
 
 
-type InspectorTab =
+export type InspectorTab =
   | "overview"
   | "headers"
   | "body"
@@ -35,11 +32,13 @@ interface RequestInspectorProps {
     | undefined;
 
   isLoading: boolean;
-
-  error:
-    Error | null;
-
+  error: Error | null;
   hasSelection: boolean;
+
+  activeTab: InspectorTab;
+
+  onTabChange:
+    (tab: InspectorTab) => void;
 
   onDelete?: () => void;
   isDeleting?: boolean;
@@ -74,17 +73,20 @@ function KeyValueTable({
           <div
             key={`${key}-${value}`}
             className={
-              "grid grid-cols-"
+              "grid "
+              + "grid-cols-"
               + "[minmax(140px,220px)_1fr] "
-              + "border-b border-zinc-800 "
+              + "border-b "
+              + "border-zinc-800 "
               + "last:border-b-0"
             }
           >
             <div
               className={
-                "bg-zinc-900/60 px-4 "
-                + "py-3 font-mono "
-                + "text-xs text-zinc-400"
+                "bg-zinc-900/60 "
+                + "px-4 py-3 "
+                + "font-mono text-xs "
+                + "text-zinc-400"
               }
             >
               {key}
@@ -113,16 +115,11 @@ export function RequestInspector({
   isLoading,
   error,
   hasSelection,
+  activeTab,
+  onTabChange,
   onDelete,
   isDeleting,
 }: RequestInspectorProps) {
-  const [
-    tab,
-    setTab,
-  ] = useState<InspectorTab>(
-    "overview",
-  );
-
   if (!hasSelection) {
     return (
       <div
@@ -142,7 +139,8 @@ export function RequestInspector({
       <div
         className={
           "flex h-full items-center "
-          + "justify-center text-zinc-500"
+          + "justify-center "
+          + "text-zinc-500"
         }
       >
         <LoaderCircle
@@ -171,31 +169,35 @@ export function RequestInspector({
   }
 
   const tabs:
-    Array<
-      {
-        id: InspectorTab;
-        label: string;
-      }
-    > = [
+    Array<{
+      id: InspectorTab;
+      label: string;
+      shortcut: string;
+    }> = [
       {
         id: "overview",
         label: "Overview",
+        shortcut: "1",
       },
       {
         id: "headers",
         label: "Headers",
+        shortcut: "2",
       },
       {
         id: "body",
         label: "Body",
+        shortcut: "3",
       },
       {
         id: "query",
         label: "Query",
+        shortcut: "4",
       },
       {
         id: "raw",
         label: "Raw",
+        shortcut: "5",
       },
     ];
 
@@ -209,6 +211,7 @@ export function RequestInspector({
       ] as [string, string],
     );
 
+
   return (
     <div
       className={
@@ -219,7 +222,8 @@ export function RequestInspector({
       <div
         className={
           "flex items-center gap-3 "
-          + "border-b border-zinc-800 "
+          + "border-b "
+          + "border-zinc-800 "
           + "px-5 py-4"
         }
       >
@@ -236,43 +240,53 @@ export function RequestInspector({
         >
           {request.path}
         </span>
-      </div>
 
-      {onDelete && (
-        <button
-          type="button"
-          disabled={isDeleting}
-          onClick={onDelete}
-          className={
-            "ml-auto rounded-md "
-            + "p-2 text-zinc-600 "
-            + "hover:bg-zinc-900 "
-            + "hover:text-red-400"
-          }
-        >
-          <Trash2 className="size-4" />
-        </button>
-      )}
+        {onDelete && (
+          <button
+            type="button"
+            title="Delete request"
+            disabled={isDeleting}
+            onClick={onDelete}
+            className={
+              "ml-auto rounded-md "
+              + "p-2 text-zinc-600 "
+              + "hover:bg-zinc-900 "
+              + "hover:text-red-400 "
+              + "disabled:opacity-50"
+            }
+          >
+            <Trash2
+              className="size-4"
+            />
+          </button>
+        )}
+      </div>
 
       <div
         className={
-          "flex gap-1 overflow-x-auto "
-          + "border-b border-zinc-800 "
-          + "px-3"
+          "flex gap-1 "
+          + "overflow-x-auto "
+          + "border-b "
+          + "border-zinc-800 px-3"
         }
       >
         {tabs.map((item) => (
           <button
             key={item.id}
             type="button"
+            title={
+              `${item.label} `
+              + `(${item.shortcut})`
+            }
             onClick={() =>
-              setTab(item.id)
+              onTabChange(item.id)
             }
             className={
-              "border-b-2 px-3 py-3 "
+              "border-b-2 "
+              + "px-3 py-3 "
               + "text-sm "
               + (
-                tab === item.id
+                activeTab === item.id
                   ? (
                       "border-cyan-400 "
                       + "text-zinc-100"
@@ -286,6 +300,17 @@ export function RequestInspector({
             }
           >
             {item.label}
+
+            <span
+              className={
+                "ml-2 hidden "
+                + "font-mono text-[9px] "
+                + "text-zinc-700 "
+                + "xl:inline"
+              }
+            >
+              {item.shortcut}
+            </span>
           </button>
         ))}
       </div>
@@ -296,7 +321,7 @@ export function RequestInspector({
           + "overflow-auto p-5"
         }
       >
-        {tab === "overview" && (
+        {activeTab === "overview" && (
           <div
             className={
               "grid gap-3 "
@@ -346,7 +371,7 @@ export function RequestInspector({
           </div>
         )}
 
-        {tab === "headers" && (
+        {activeTab === "headers" && (
           <KeyValueTable
             entries={
               Object.entries(
@@ -356,13 +381,13 @@ export function RequestInspector({
           />
         )}
 
-        {tab === "query" && (
+        {activeTab === "query" && (
           <KeyValueTable
             entries={queryEntries}
           />
         )}
 
-        {tab === "body" && (
+        {activeTab === "body" && (
           request.body.format
             === "json"
           && request.body.parsed
@@ -379,7 +404,8 @@ export function RequestInspector({
                   className={
                     "whitespace-pre-wrap "
                     + "wrap-break-word "
-                    + "font-mono text-sm "
+                    + "font-mono "
+                    + "text-sm "
                     + "text-zinc-300"
                   }
                 >
@@ -389,7 +415,7 @@ export function RequestInspector({
               )
         )}
 
-        {tab === "raw" && (
+        {activeTab === "raw" && (
           <pre
             className={
               "whitespace-pre-wrap "

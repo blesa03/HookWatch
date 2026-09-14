@@ -1,4 +1,8 @@
 import {
+  useEffect,
+  useRef,
+} from "react";
+import {
   ChevronRight,
   Inbox,
   LoaderCircle,
@@ -54,16 +58,34 @@ export function RequestList({
   onLoadMore,
   ingestUrl,
 }: RequestListProps) {
+  const selectedRef =
+    useRef<HTMLButtonElement | null>(
+      null,
+    );
+
+
+  useEffect(() => {
+    selectedRef.current
+      ?.scrollIntoView({
+        block: "nearest",
+      });
+  }, [selectedRequestId]);
+
+
   if (isLoading) {
     return (
       <div
         className={
           "flex h-full items-center "
-          + "justify-center text-zinc-500"
+          + "justify-center "
+          + "text-zinc-500"
         }
       >
         <LoaderCircle
-          className="mr-2 size-4 animate-spin"
+          className={
+            "mr-2 size-4 "
+            + "animate-spin"
+          }
         />
 
         Loading requests…
@@ -71,15 +93,21 @@ export function RequestList({
     );
   }
 
+
   if (error) {
     return (
       <div className="p-5">
-        <p className="text-sm text-red-400">
+        <p
+          className={
+            "text-sm text-red-400"
+          }
+        >
           {error.message}
         </p>
       </div>
     );
   }
+
 
   if (requests.length === 0) {
     const curlExample =
@@ -87,11 +115,13 @@ export function RequestList({
       + `-H "Content-Type: application/json" `
       + `-d '{"hello":"world"}'`;
 
+
     return (
       <div
         className={
           "flex h-full flex-col "
-          + "items-center justify-center "
+          + "items-center "
+          + "justify-center "
           + "px-6 text-center"
         }
       >
@@ -104,7 +134,8 @@ export function RequestList({
 
         <p
           className={
-            "font-medium text-zinc-200"
+            "font-medium "
+            + "text-zinc-200"
           }
         >
           Waiting for requests
@@ -112,7 +143,8 @@ export function RequestList({
 
         <p
           className={
-            "mt-2 max-w-sm text-sm "
+            "mt-2 max-w-sm "
+            + "text-sm "
             + "text-zinc-500"
           }
         >
@@ -138,25 +170,40 @@ export function RequestList({
     );
   }
 
+
   return (
-    <div className="h-full overflow-y-auto">
+    <div
+      className={
+        "h-full overflow-y-auto"
+      }
+    >
       {requests.map((request) => {
         const selected =
           request.id
           === selectedRequestId;
 
+
         return (
           <button
             key={request.id}
+            ref={
+              selected
+                ? selectedRef
+                : undefined
+            }
             type="button"
             onClick={() =>
-              onSelect(request.id)
+              onSelect(
+                request.id
+              )
             }
             className={
-              "flex w-full items-center "
-              + "gap-3 border-b "
-              + "border-zinc-900 px-4 "
-              + "py-3 text-left "
+              "flex w-full "
+              + "items-center gap-3 "
+              + "border-b "
+              + "border-zinc-900 "
+              + "px-4 py-3 "
+              + "text-left "
               + "transition-colors "
               + (
                 selected
@@ -169,7 +216,9 @@ export function RequestList({
             }
           >
             <MethodBadge
-              method={request.method}
+              method={
+                request.method
+              }
             />
 
             <div
@@ -225,11 +274,15 @@ export function RequestList({
             disabled={
               isFetchingNextPage
             }
-            onClick={onLoadMore}
+            onClick={
+              onLoadMore
+            }
             className={
               "w-full rounded-md "
-              + "border border-zinc-800 "
-              + "px-3 py-2 text-sm "
+              + "border "
+              + "border-zinc-800 "
+              + "px-3 py-2 "
+              + "text-sm "
               + "text-zinc-400 "
               + "hover:bg-zinc-900 "
               + "disabled:opacity-50"

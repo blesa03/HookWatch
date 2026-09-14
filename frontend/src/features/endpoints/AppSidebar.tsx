@@ -32,7 +32,7 @@ export function AppSidebar() {
   return (
     <aside
       className={
-        "flex h-full w-[220px] "
+        "flex h-full w-55 "
         + "shrink-0 flex-col "
         + "border-r border-zinc-800 "
         + "bg-zinc-950"

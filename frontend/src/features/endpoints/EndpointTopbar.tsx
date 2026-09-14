@@ -1,6 +1,10 @@
 import {
   Check,
+  Command,
   Copy,
+  Keyboard,
+  Maximize2,
+  Minimize2,
   Radio,
   Send,
 } from "lucide-react";
@@ -19,7 +23,13 @@ import type {
 interface EndpointTopbarProps {
   endpoint: Endpoint;
   socketStatus: SocketStatus;
+
+  focusMode: boolean;
+
   onSendTest: () => void;
+  onToggleFocus: () => void;
+  onOpenCommands: () => void;
+  onOpenShortcuts: () => void;
 }
 
 
@@ -48,12 +58,17 @@ function statusLabel(
 export function EndpointTopbar({
   endpoint,
   socketStatus,
+  focusMode,
   onSendTest,
+  onToggleFocus,
+  onOpenCommands,
+  onOpenShortcuts,
 }: EndpointTopbarProps) {
   const [
     copied,
     setCopied,
   ] = useState(false);
+
 
   const copyUrl = async () => {
     await navigator.clipboard.writeText(
@@ -70,25 +85,51 @@ export function EndpointTopbar({
     );
   };
 
+
   return (
     <header
       className={
-        "flex min-h-16 items-center "
-        + "gap-4 border-b "
+        "flex min-h-16 "
+        + "items-center gap-4 "
+        + "border-b "
         + "border-zinc-800 "
         + "bg-zinc-950 px-4"
       }
     >
       <div className="min-w-0">
-        <p
+        <div
           className={
-            "truncate text-sm "
-            + "font-semibold "
-            + "text-zinc-100"
+            "flex items-center gap-2"
           }
         >
-          {endpoint.name}
-        </p>
+          <p
+            className={
+              "truncate text-sm "
+              + "font-semibold "
+              + "text-zinc-100"
+            }
+          >
+            {endpoint.name}
+          </p>
+
+          {focusMode && (
+            <span
+              className={
+                "rounded border "
+                + "border-cyan-900/60 "
+                + "bg-cyan-950/30 "
+                + "px-1.5 py-0.5 "
+                + "text-[9px] "
+                + "font-medium "
+                + "uppercase "
+                + "tracking-wide "
+                + "text-cyan-400"
+              }
+            >
+              Focus
+            </span>
+          )}
+        </div>
 
         <p
           className={
@@ -103,17 +144,21 @@ export function EndpointTopbar({
 
       <div
         className={
-          "ml-auto flex shrink-0 "
+          "ml-auto flex "
+          + "shrink-0 "
           + "items-center gap-2"
         }
       >
         <div
           className={
-            "hidden items-center gap-2 "
-            + "rounded-md border "
+            "hidden items-center "
+            + "gap-2 rounded-md "
+            + "border "
             + "border-zinc-800 "
-            + "px-3 py-2 text-xs "
-            + "text-zinc-400 sm:flex"
+            + "px-3 py-2 "
+            + "text-xs "
+            + "text-zinc-400 "
+            + "lg:flex"
           }
         >
           <Radio
@@ -135,30 +180,145 @@ export function EndpointTopbar({
 
         <button
           type="button"
-          onClick={onSendTest}
+          title="Command palette (P)"
+          onClick={
+            onOpenCommands
+          }
           className={
-            "inline-flex items-center "
+            "hidden items-center "
             + "gap-2 rounded-md "
-            + "border border-zinc-800 "
-            + "px-3 py-2 text-xs "
-            + "text-zinc-300 "
-            + "hover:bg-zinc-900"
+            + "border "
+            + "border-zinc-800 "
+            + "px-3 py-2 "
+            + "text-xs "
+            + "text-zinc-400 "
+            + "hover:bg-zinc-900 "
+            + "md:inline-flex"
           }
         >
-          <Send className="size-3.5" />
-          Send test
+          <Command
+            className="size-3.5"
+          />
+
+          <span>
+            Commands
+          </span>
+
+          <kbd
+            className={
+              "font-mono "
+              + "text-[9px] "
+              + "text-zinc-600"
+            }
+          >
+            P
+          </kbd>
         </button>
 
         <button
           type="button"
+          title={
+            "Send test request (T)"
+          }
+          onClick={
+            onSendTest
+          }
+          className={
+            "inline-flex "
+            + "items-center gap-2 "
+            + "rounded-md "
+            + "border "
+            + "border-zinc-800 "
+            + "px-3 py-2 "
+            + "text-xs "
+            + "text-zinc-300 "
+            + "hover:bg-zinc-900"
+          }
+        >
+          <Send
+            className="size-3.5"
+          />
+
+          <span
+            className={
+              "hidden sm:inline"
+            }
+          >
+            Send test
+          </span>
+        </button>
+
+        <button
+          type="button"
+          title={
+            focusMode
+              ? (
+                  "Exit Focus "
+                  + "Mode (F)"
+                )
+              : "Focus Mode (F)"
+          }
+          onClick={
+            onToggleFocus
+          }
+          className={
+            "rounded-md border "
+            + "border-zinc-800 "
+            + "p-2 text-zinc-500 "
+            + "hover:bg-zinc-900 "
+            + "hover:text-zinc-300"
+          }
+        >
+          {focusMode
+            ? (
+                <Minimize2
+                  className="size-4"
+                />
+              )
+            : (
+                <Maximize2
+                  className="size-4"
+                />
+              )}
+        </button>
+
+        <button
+          type="button"
+          title={
+            "Keyboard shortcuts (?)"
+          }
+          onClick={
+            onOpenShortcuts
+          }
+          className={
+            "hidden rounded-md "
+            + "border "
+            + "border-zinc-800 "
+            + "p-2 text-zinc-500 "
+            + "hover:bg-zinc-900 "
+            + "hover:text-zinc-300 "
+            + "sm:block"
+          }
+        >
+          <Keyboard
+            className="size-4"
+          />
+        </button>
+
+        <button
+          type="button"
+          title="Copy ingest URL"
           onClick={() => {
             void copyUrl();
           }}
           className={
-            "inline-flex items-center "
-            + "gap-2 rounded-md "
-            + "border border-zinc-800 "
-            + "px-3 py-2 text-xs "
+            "inline-flex "
+            + "items-center gap-2 "
+            + "rounded-md "
+            + "border "
+            + "border-zinc-800 "
+            + "px-3 py-2 "
+            + "text-xs "
             + "text-zinc-300 "
             + "hover:bg-zinc-900"
           }
@@ -175,9 +335,15 @@ export function EndpointTopbar({
                 />
               )}
 
-          {copied
-            ? "Copied"
-            : "Copy URL"}
+          <span
+            className={
+              "hidden xl:inline"
+            }
+          >
+            {copied
+              ? "Copied"
+              : "Copy URL"}
+          </span>
         </button>
       </div>
     </header>
