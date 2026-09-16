@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   Check,
   Command,
   Copy,
@@ -23,9 +24,9 @@ import type {
 interface EndpointTopbarProps {
   endpoint: Endpoint;
   socketStatus: SocketStatus;
-
   focusMode: boolean;
 
+  onBack?: () => void;
   onSendTest: () => void;
   onToggleFocus: () => void;
   onOpenCommands: () => void;
@@ -59,6 +60,7 @@ export function EndpointTopbar({
   endpoint,
   socketStatus,
   focusMode,
+  onBack,
   onSendTest,
   onToggleFocus,
   onOpenCommands,
@@ -71,32 +73,64 @@ export function EndpointTopbar({
 
 
   const copyUrl = async () => {
-    await navigator.clipboard.writeText(
-      endpoint.ingest_url,
-    );
+    try {
+      await navigator.clipboard
+        .writeText(
+          endpoint.ingest_url,
+        );
 
-    setCopied(true);
+      setCopied(true);
 
-    window.setTimeout(
-      () => {
-        setCopied(false);
-      },
-      1200,
-    );
+      window.setTimeout(
+        () => {
+          setCopied(false);
+        },
+        1200,
+      );
+    } catch {
+      setCopied(false);
+    }
   };
+
+
+  const live =
+    socketStatus === "connected";
 
 
   return (
     <header
       className={
         "flex min-h-16 "
-        + "items-center gap-4 "
-        + "border-b "
-        + "border-zinc-800 "
-        + "bg-zinc-950 px-4"
+        + "shrink-0 items-center "
+        + "gap-2 border-b "
+        + "border-zinc-800/80 "
+        + "bg-zinc-950/95 "
+        + "px-3 py-2 sm:px-4"
       }
     >
-      <div className="min-w-0">
+      {onBack && (
+        <button
+          type="button"
+          aria-label="Back"
+          onClick={onBack}
+          className={
+            "shrink-0 rounded-lg "
+            + "p-2 text-zinc-500 "
+            + "hover:bg-zinc-900 "
+            + "hover:text-zinc-200"
+          }
+        >
+          <ArrowLeft
+            className="size-4"
+          />
+        </button>
+      )}
+
+      <div
+        className={
+          "min-w-0 flex-1"
+        }
+      >
         <div
           className={
             "flex items-center gap-2"
@@ -115,15 +149,17 @@ export function EndpointTopbar({
           {focusMode && (
             <span
               className={
-                "rounded border "
+                "hidden rounded-full "
+                + "border "
                 + "border-cyan-900/60 "
                 + "bg-cyan-950/30 "
-                + "px-1.5 py-0.5 "
+                + "px-2 py-0.5 "
                 + "text-[9px] "
                 + "font-medium "
                 + "uppercase "
                 + "tracking-wide "
-                + "text-cyan-400"
+                + "text-cyan-400 "
+                + "sm:inline"
               }
             >
               Focus
@@ -132,9 +168,12 @@ export function EndpointTopbar({
         </div>
 
         <p
+          title={
+            endpoint.ingest_url
+          }
           className={
             "mt-0.5 truncate "
-            + "font-mono text-xs "
+            + "font-mono text-[11px] "
             + "text-zinc-600"
           }
         >
@@ -144,55 +183,67 @@ export function EndpointTopbar({
 
       <div
         className={
-          "ml-auto flex "
-          + "shrink-0 "
-          + "items-center gap-2"
+          "flex shrink-0 "
+          + "items-center gap-1.5 "
+          + "sm:gap-2"
         }
       >
         <div
+          title={
+            statusLabel(
+              socketStatus,
+            )
+          }
           className={
-            "hidden items-center "
-            + "gap-2 rounded-md "
-            + "border "
+            "inline-flex h-9 "
+            + "items-center gap-2 "
+            + "rounded-lg border "
             + "border-zinc-800 "
-            + "px-3 py-2 "
+            + "px-2.5 "
             + "text-xs "
-            + "text-zinc-400 "
-            + "lg:flex"
+            + "text-zinc-500"
           }
         >
           <Radio
             className={
               "size-3.5 "
               + (
-                socketStatus
-                  === "connected"
+                live
                   ? "text-emerald-400"
                   : "text-zinc-600"
               )
             }
           />
 
-          {statusLabel(
-            socketStatus,
-          )}
+          <span
+            className={
+              "hidden xl:inline"
+            }
+          >
+            {statusLabel(
+              socketStatus,
+            )}
+          </span>
         </div>
 
         <button
           type="button"
           title="Command palette (P)"
+          aria-label={
+            "Open command palette"
+          }
           onClick={
             onOpenCommands
           }
           className={
-            "hidden items-center "
-            + "gap-2 rounded-md "
-            + "border "
+            "hidden h-9 "
+            + "items-center gap-2 "
+            + "rounded-lg border "
             + "border-zinc-800 "
-            + "px-3 py-2 "
-            + "text-xs "
+            + "px-3 text-xs "
             + "text-zinc-400 "
             + "hover:bg-zinc-900 "
+            + "hover:text-zinc-200 "
             + "md:inline-flex"
           }
         >
@@ -200,14 +251,11 @@ export function EndpointTopbar({
             className="size-3.5"
           />
 
-          <span>
-            Commands
-          </span>
+          Commands
 
           <kbd
             className={
-              "font-mono "
-              + "text-[9px] "
+              "font-mono text-[9px] "
               + "text-zinc-600"
             }
           >
@@ -217,20 +265,17 @@ export function EndpointTopbar({
 
         <button
           type="button"
-          title={
-            "Send test request (T)"
-          }
+          title="Send test request (T)"
+          aria-label="Send test request"
           onClick={
             onSendTest
           }
           className={
-            "inline-flex "
+            "inline-flex h-9 "
             + "items-center gap-2 "
-            + "rounded-md "
-            + "border "
+            + "rounded-lg border "
             + "border-zinc-800 "
-            + "px-3 py-2 "
-            + "text-xs "
+            + "px-2.5 text-xs "
             + "text-zinc-300 "
             + "hover:bg-zinc-900"
           }
@@ -252,34 +297,36 @@ export function EndpointTopbar({
           type="button"
           title={
             focusMode
-              ? (
-                  "Exit Focus "
-                  + "Mode (F)"
-                )
+              ? "Exit Focus Mode (F)"
               : "Focus Mode (F)"
+          }
+          aria-label={
+            focusMode
+              ? "Exit Focus Mode"
+              : "Enter Focus Mode"
           }
           onClick={
             onToggleFocus
           }
           className={
-            "rounded-md border "
-            + "border-zinc-800 "
-            + "p-2 text-zinc-500 "
+            "h-9 rounded-lg "
+            + "border border-zinc-800 "
+            + "px-2.5 text-zinc-500 "
             + "hover:bg-zinc-900 "
             + "hover:text-zinc-300"
           }
         >
           {focusMode
             ? (
-                <Minimize2
-                  className="size-4"
-                />
-              )
+              <Minimize2
+                className="size-4"
+              />
+            )
             : (
-                <Maximize2
-                  className="size-4"
-                />
-              )}
+              <Maximize2
+                className="size-4"
+              />
+            )}
         </button>
 
         <button
@@ -287,17 +334,20 @@ export function EndpointTopbar({
           title={
             "Keyboard shortcuts (?)"
           }
+          aria-label={
+            "Keyboard shortcuts"
+          }
           onClick={
             onOpenShortcuts
           }
           className={
-            "hidden rounded-md "
-            + "border "
+            "hidden h-9 "
+            + "rounded-lg border "
             + "border-zinc-800 "
-            + "p-2 text-zinc-500 "
+            + "px-2.5 text-zinc-500 "
             + "hover:bg-zinc-900 "
             + "hover:text-zinc-300 "
-            + "sm:block"
+            + "lg:block"
           }
         >
           <Keyboard
@@ -308,32 +358,34 @@ export function EndpointTopbar({
         <button
           type="button"
           title="Copy ingest URL"
+          aria-label="Copy ingest URL"
           onClick={() => {
             void copyUrl();
           }}
           className={
-            "inline-flex "
+            "inline-flex h-9 "
             + "items-center gap-2 "
-            + "rounded-md "
-            + "border "
+            + "rounded-lg border "
             + "border-zinc-800 "
-            + "px-3 py-2 "
-            + "text-xs "
+            + "px-2.5 text-xs "
             + "text-zinc-300 "
             + "hover:bg-zinc-900"
           }
         >
           {copied
             ? (
-                <Check
-                  className="size-3.5"
-                />
-              )
+              <Check
+                className={
+                  "size-3.5 "
+                  + "text-emerald-400"
+                }
+              />
+            )
             : (
-                <Copy
-                  className="size-3.5"
-                />
-              )}
+              <Copy
+                className="size-3.5"
+              />
+            )}
 
           <span
             className={

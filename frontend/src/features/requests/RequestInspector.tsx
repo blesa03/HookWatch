@@ -1,4 +1,5 @@
 import {
+  ArrowLeft,
   LoaderCircle,
   Trash2,
 } from "lucide-react";
@@ -40,6 +41,7 @@ interface RequestInspectorProps {
   onTabChange:
     (tab: InspectorTab) => void;
 
+  onBack?: () => void;
   onDelete?: () => void;
   isDeleting?: boolean;
 }
@@ -55,7 +57,11 @@ function KeyValueTable({
 }) {
   if (entries.length === 0) {
     return (
-      <p className="text-sm text-zinc-500">
+      <p
+        className={
+          "text-sm text-zinc-500"
+        }
+      >
         No values.
       </p>
     );
@@ -64,8 +70,9 @@ function KeyValueTable({
   return (
     <div
       className={
-        "overflow-hidden rounded-lg "
-        + "border border-zinc-800"
+        "overflow-hidden "
+        + "rounded-xl border "
+        + "border-zinc-800"
       }
     >
       {entries.map(
@@ -73,20 +80,19 @@ function KeyValueTable({
           <div
             key={`${key}-${value}`}
             className={
-              "grid "
-              + "grid-cols-"
-              + "[minmax(140px,220px)_1fr] "
-              + "border-b "
-              + "border-zinc-800 "
-              + "last:border-b-0"
+              "grid grid-cols-1 "
+              + "border-b border-zinc-800 "
+              + "last:border-b-0 "
+              + "sm:grid-cols-[minmax(140px,220px)_1fr]"
             }
           >
             <div
               className={
                 "bg-zinc-900/60 "
-                + "px-4 py-3 "
+                + "px-4 py-2.5 "
                 + "font-mono text-xs "
-                + "text-zinc-400"
+                + "text-zinc-500 "
+                + "sm:py-3"
               }
             >
               {key}
@@ -97,6 +103,7 @@ function KeyValueTable({
                 "min-w-0 break-all "
                 + "px-4 py-3 "
                 + "font-mono text-xs "
+                + "leading-5 "
                 + "text-zinc-300"
               }
             >
@@ -117,6 +124,7 @@ export function RequestInspector({
   hasSelection,
   activeTab,
   onTabChange,
+  onBack,
   onDelete,
   isDeleting,
 }: RequestInspectorProps) {
@@ -124,8 +132,10 @@ export function RequestInspector({
     return (
       <div
         className={
-          "flex h-full items-center "
+          "flex h-full "
+          + "items-center "
           + "justify-center "
+          + "px-6 text-center "
           + "text-sm text-zinc-600"
         }
       >
@@ -140,12 +150,13 @@ export function RequestInspector({
         className={
           "flex h-full items-center "
           + "justify-center "
-          + "text-zinc-500"
+          + "text-sm text-zinc-500"
         }
       >
         <LoaderCircle
           className={
-            "mr-2 size-4 animate-spin"
+            "mr-2 size-4 "
+            + "animate-spin"
           }
         />
 
@@ -156,8 +167,17 @@ export function RequestInspector({
 
   if (error) {
     return (
-      <div className="p-6">
-        <p className="text-red-400">
+      <div className="p-5">
+        <p
+          role="alert"
+          className={
+            "rounded-lg border "
+            + "border-red-950 "
+            + "bg-red-950/30 "
+            + "px-3 py-2.5 "
+            + "text-sm text-red-300"
+          }
+        >
           {error.message}
         </p>
       </div>
@@ -221,20 +241,44 @@ export function RequestInspector({
     >
       <div
         className={
-          "flex items-center gap-3 "
+          "flex min-h-16 "
+          + "items-center gap-2 "
           + "border-b "
-          + "border-zinc-800 "
-          + "px-5 py-4"
+          + "border-zinc-800/80 "
+          + "px-3 py-3 sm:px-5"
         }
       >
+        {onBack && (
+          <button
+            type="button"
+            aria-label={
+              "Back to request list"
+            }
+            onClick={onBack}
+            className={
+              "rounded-lg p-2 "
+              + "text-zinc-500 "
+              + "hover:bg-zinc-900 "
+              + "hover:text-zinc-200 "
+              + "lg:hidden"
+            }
+          >
+            <ArrowLeft
+              className="size-4"
+            />
+          </button>
+        )}
+
         <MethodBadge
           method={request.method}
         />
 
         <span
+          title={request.path}
           className={
-            "min-w-0 truncate "
-            + "font-mono text-sm "
+            "min-w-0 flex-1 "
+            + "truncate font-mono "
+            + "text-sm "
             + "text-zinc-200"
           }
         >
@@ -244,13 +288,16 @@ export function RequestInspector({
         {onDelete && (
           <button
             type="button"
+            aria-label={
+              "Delete request"
+            }
             title="Delete request"
             disabled={isDeleting}
             onClick={onDelete}
             className={
-              "ml-auto rounded-md "
-              + "p-2 text-zinc-600 "
-              + "hover:bg-zinc-900 "
+              "rounded-lg p-2 "
+              + "text-zinc-600 "
+              + "hover:bg-red-950/30 "
               + "hover:text-red-400 "
               + "disabled:opacity-50"
             }
@@ -263,17 +310,26 @@ export function RequestInspector({
       </div>
 
       <div
+        role="tablist"
+        aria-label={
+          "Request inspector"
+        }
         className={
-          "flex gap-1 "
+          "flex shrink-0 gap-1 "
           + "overflow-x-auto "
           + "border-b "
-          + "border-zinc-800 px-3"
+          + "border-zinc-800/80 "
+          + "px-2 sm:px-3"
         }
       >
         {tabs.map((item) => (
           <button
             key={item.id}
             type="button"
+            role="tab"
+            aria-selected={
+              activeTab === item.id
+            }
             title={
               `${item.label} `
               + `(${item.shortcut})`
@@ -282,20 +338,21 @@ export function RequestInspector({
               onTabChange(item.id)
             }
             className={
-              "border-b-2 "
+              "shrink-0 border-b-2 "
               + "px-3 py-3 "
               + "text-sm "
+              + "transition-colors "
               + (
                 activeTab === item.id
                   ? (
-                      "border-cyan-400 "
-                      + "text-zinc-100"
-                    )
+                    "border-cyan-400 "
+                    + "text-zinc-100"
+                  )
                   : (
-                      "border-transparent "
-                      + "text-zinc-500 "
-                      + "hover:text-zinc-300"
-                    )
+                    "border-transparent "
+                    + "text-zinc-500 "
+                    + "hover:text-zinc-300"
+                  )
               )
             }
           >
@@ -316,9 +373,11 @@ export function RequestInspector({
       </div>
 
       <div
+        role="tabpanel"
         className={
           "min-h-0 flex-1 "
-          + "overflow-auto p-5"
+          + "overflow-auto "
+          + "p-4 sm:p-5"
         }
       >
         {activeTab === "overview" && (
@@ -393,26 +452,26 @@ export function RequestInspector({
           && request.body.parsed
             !== null
             ? (
-                <JsonViewer
-                  value={
-                    request.body.parsed
-                  }
-                />
-              )
+              <JsonViewer
+                value={
+                  request.body.parsed
+                }
+              />
+            )
             : (
-                <pre
-                  className={
-                    "whitespace-pre-wrap "
-                    + "wrap-break-word "
-                    + "font-mono "
-                    + "text-sm "
-                    + "text-zinc-300"
-                  }
-                >
-                  {request.body.raw
-                    || "Empty body"}
-                </pre>
-              )
+              <pre
+                className={
+                  "whitespace-pre-wrap "
+                  + "wrap-break-word "
+                  + "font-mono "
+                  + "text-sm leading-6 "
+                  + "text-zinc-300"
+                }
+              >
+                {request.body.raw
+                  || "Empty body"}
+              </pre>
+            )
         )}
 
         {activeTab === "raw" && (
@@ -445,15 +504,16 @@ function InfoCard({
   return (
     <div
       className={
-        "rounded-lg border "
+        "rounded-xl border "
         + "border-zinc-800 "
-        + "bg-zinc-900/40 p-4"
+        + "bg-zinc-900/35 p-4"
       }
     >
       <p
         className={
-          "text-xs font-medium "
-          + "uppercase tracking-wide "
+          "text-[10px] "
+          + "font-semibold uppercase "
+          + "tracking-[0.14em] "
           + "text-zinc-600"
         }
       >
@@ -464,6 +524,7 @@ function InfoCard({
         className={
           "mt-2 break-all "
           + "font-mono text-sm "
+          + "leading-6 "
           + "text-zinc-300"
         }
       >

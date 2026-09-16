@@ -78,7 +78,7 @@ export function RequestList({
         className={
           "flex h-full items-center "
           + "justify-center "
-          + "text-zinc-500"
+          + "text-sm text-zinc-500"
         }
       >
         <LoaderCircle
@@ -98,8 +98,13 @@ export function RequestList({
     return (
       <div className="p-5">
         <p
+          role="alert"
           className={
-            "text-sm text-red-400"
+            "rounded-lg border "
+            + "border-red-950 "
+            + "bg-red-950/30 "
+            + "px-3 py-2.5 "
+            + "text-sm text-red-300"
           }
         >
           {error.message}
@@ -122,20 +127,30 @@ export function RequestList({
           "flex h-full flex-col "
           + "items-center "
           + "justify-center "
-          + "px-6 text-center"
+          + "px-6 py-10 "
+          + "text-center"
         }
       >
-        <Inbox
+        <div
           className={
-            "mb-4 size-7 "
-            + "text-zinc-600"
+            "flex size-11 items-center "
+            + "justify-center "
+            + "rounded-xl border "
+            + "border-zinc-800 "
+            + "bg-zinc-900/60"
           }
-        />
+        >
+          <Inbox
+            className={
+              "size-5 text-zinc-600"
+            }
+          />
+        </div>
 
         <p
           className={
-            "font-medium "
-            + "text-zinc-200"
+            "mt-4 font-medium "
+            + "text-zinc-300"
           }
         >
           Waiting for requests
@@ -144,13 +159,13 @@ export function RequestList({
         <p
           className={
             "mt-2 max-w-sm "
-            + "text-sm "
-            + "text-zinc-500"
+            + "text-sm leading-6 "
+            + "text-zinc-600"
           }
         >
-          Send an HTTP request to the
-          endpoint and it will appear
-          here automatically.
+          Send an HTTP request to
+          this endpoint and it will
+          appear here automatically.
         </p>
 
         <pre
@@ -161,7 +176,8 @@ export function RequestList({
             + "border-zinc-800 "
             + "bg-black/30 p-3 "
             + "text-left font-mono "
-            + "text-xs text-zinc-400"
+            + "text-xs leading-5 "
+            + "text-zinc-500"
           }
         >
           {curlExample}
@@ -175,6 +191,9 @@ export function RequestList({
     <div
       className={
         "h-full overflow-y-auto"
+      }
+      aria-label={
+        "Captured requests"
       }
     >
       {requests.map((request) => {
@@ -192,26 +211,30 @@ export function RequestList({
                 : undefined
             }
             type="button"
+            aria-pressed={selected}
             onClick={() =>
               onSelect(
-                request.id
+                request.id,
               )
             }
             className={
-              "flex w-full "
+              "group flex w-full "
               + "items-center gap-3 "
               + "border-b "
               + "border-zinc-900 "
-              + "px-4 py-3 "
+              + "px-4 py-3.5 "
               + "text-left "
               + "transition-colors "
               + (
                 selected
-                  ? "bg-zinc-800/70"
+                  ? (
+                    "bg-zinc-800/80 "
+                    + "shadow-[inset_2px_0_0_#22d3ee]"
+                  )
                   : (
-                      "hover:bg-"
-                      + "zinc-900/70"
-                    )
+                    "hover:bg-"
+                    + "zinc-900/60"
+                  )
               )
             }
           >
@@ -230,7 +253,11 @@ export function RequestList({
                 className={
                   "truncate font-mono "
                   + "text-sm "
-                  + "text-zinc-200"
+                  + (
+                    selected
+                      ? "text-zinc-100"
+                      : "text-zinc-300"
+                  )
                 }
               >
                 {request.path}
@@ -238,15 +265,22 @@ export function RequestList({
 
               <div
                 className={
-                  "mt-1 flex gap-3 "
-                  + "text-xs "
-                  + "text-zinc-500"
+                  "mt-1.5 flex "
+                  + "items-center gap-2 "
+                  + "text-[11px] "
+                  + "text-zinc-600"
                 }
               >
                 <span>
                   {formatBytes(
                     request.body_size,
                   )}
+                </span>
+
+                <span
+                  aria-hidden="true"
+                >
+                  ·
                 </span>
 
                 <span>
@@ -260,7 +294,15 @@ export function RequestList({
             <ChevronRight
               className={
                 "size-4 shrink-0 "
-                + "text-zinc-700"
+                + (
+                  selected
+                    ? "text-cyan-400"
+                    : (
+                      "text-zinc-800 "
+                      + "group-hover:"
+                      + "text-zinc-600"
+                    )
+                )
               }
             />
           </button>
@@ -278,13 +320,14 @@ export function RequestList({
               onLoadMore
             }
             className={
-              "w-full rounded-md "
+              "w-full rounded-lg "
               + "border "
               + "border-zinc-800 "
-              + "px-3 py-2 "
+              + "px-3 py-2.5 "
               + "text-sm "
-              + "text-zinc-400 "
+              + "text-zinc-500 "
               + "hover:bg-zinc-900 "
+              + "hover:text-zinc-300 "
               + "disabled:opacity-50"
             }
           >

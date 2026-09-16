@@ -1,4 +1,7 @@
 import {
+  Clock3,
+} from "lucide-react";
+import {
   useEffect,
   useState,
 } from "react";
@@ -12,7 +15,7 @@ function remainingTime(
 ): string {
   const remaining =
     new Date(
-      expiresAt
+      expiresAt,
     ).getTime()
     - Date.now();
 
@@ -21,14 +24,14 @@ function remainingTime(
   }
 
   const hours = Math.floor(
-    remaining / 3_600_000
+    remaining / 3_600_000,
   );
 
   const minutes = Math.floor(
     (
       remaining
       % 3_600_000
-    ) / 60_000
+    ) / 60_000,
   );
 
   return `${hours}h ${minutes}m`;
@@ -49,9 +52,10 @@ export function TemporaryBanner({
   ] = useState(
     () =>
       remainingTime(
-        expiresAt
+        expiresAt,
       ),
   );
+
 
   useEffect(() => {
     const interval =
@@ -59,7 +63,7 @@ export function TemporaryBanner({
         () => {
           setRemaining(
             remainingTime(
-              expiresAt
+              expiresAt,
             ),
           );
         },
@@ -68,24 +72,36 @@ export function TemporaryBanner({
 
     return () =>
       window.clearInterval(
-        interval
+        interval,
       );
   }, [expiresAt]);
 
 
   return (
     <div
+      role="status"
       className={
-        "flex items-center "
-        + "justify-center gap-4 "
-        + "border-b border-amber-"
-        + "900/30 bg-amber-950/20 "
-        + "px-4 py-2 text-xs "
-        + "text-amber-300"
+        "flex shrink-0 "
+        + "flex-wrap items-center "
+        + "justify-center gap-x-4 "
+        + "gap-y-1 border-b "
+        + "border-amber-900/30 "
+        + "bg-amber-950/20 "
+        + "px-4 py-2 "
+        + "text-xs text-amber-300"
       }
     >
-      Temporary endpoint ·
-      {` ${remaining}`}
+      <span
+        className={
+          "inline-flex "
+          + "items-center gap-2"
+        }
+      >
+        <Clock3 className="size-3.5" />
+
+        Temporary endpoint
+        · {remaining}
+      </span>
 
       <button
         type="button"
@@ -93,8 +109,10 @@ export function TemporaryBanner({
           navigate("/register")
         }
         className={
-          "font-medium underline "
-          + "underline-offset-4"
+          "font-medium "
+          + "underline "
+          + "underline-offset-4 "
+          + "hover:text-amber-200"
         }
       >
         Create account to keep it

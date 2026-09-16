@@ -206,7 +206,8 @@ function EndpointWorkspace({
       requestsQuery.data
         ?.pages
         .flatMap(
-          (page) => page.results,
+          (page) =>
+            page.results,
         )
       ?? [],
     [requestsQuery.data],
@@ -255,7 +256,9 @@ function EndpointWorkspace({
 
   const selectRelativeRequest =
     useCallback(
-      (direction: 1 | -1) => {
+      (
+        direction: 1 | -1,
+      ) => {
         if (
           requests.length === 0
         ) {
@@ -265,10 +268,10 @@ function EndpointWorkspace({
         const currentIndex =
           selectedRequestId
             ? requests.findIndex(
-                (request) =>
-                  request.id
-                  === selectedRequestId,
-              )
+              (request) =>
+                request.id
+                === selectedRequestId,
+            )
             : -1;
 
         let nextIndex: number;
@@ -292,7 +295,7 @@ function EndpointWorkspace({
 
         if (request) {
           selectRequest(
-            request.id
+            request.id,
           );
         }
       },
@@ -367,9 +370,10 @@ function EndpointWorkspace({
         return;
       }
 
-      void navigator.clipboard.writeText(
-        endpoint.ingest_url,
-      );
+      void navigator.clipboard
+        .writeText(
+          endpoint.ingest_url,
+        );
     }, [endpoint]);
 
 
@@ -379,7 +383,6 @@ function EndpointWorkspace({
     ) => {
       const key =
         event.key.toLowerCase();
-
 
       if (
         event.key === "Escape"
@@ -406,7 +409,6 @@ function EndpointWorkspace({
         return;
       }
 
-
       if (
         commandOpen
         || shortcutsOpen
@@ -415,35 +417,30 @@ function EndpointWorkspace({
         return;
       }
 
-
       if (
         isTypingTarget(
-          event.target
+          event.target,
         )
       ) {
         return;
       }
 
-
       if (key === "p") {
         event.preventDefault();
-
         setCommandOpen(true);
-
         return;
       }
-
 
       if (key === "f") {
         event.preventDefault();
 
         setFocusMode(
-          (enabled) => !enabled,
+          (enabled) =>
+            !enabled,
         );
 
         return;
       }
-
 
       if (event.key === "/") {
         event.preventDefault();
@@ -455,50 +452,41 @@ function EndpointWorkspace({
         return;
       }
 
-
       if (
         key === "j"
-        || event.key === "ArrowDown"
+        || event.key
+        === "ArrowDown"
       ) {
         event.preventDefault();
 
         selectRelativeRequest(1);
-
         return;
       }
 
-
       if (
         key === "k"
-        || event.key === "ArrowUp"
+        || event.key
+        === "ArrowUp"
       ) {
         event.preventDefault();
 
         selectRelativeRequest(-1);
-
         return;
       }
-
 
       if (key === "t") {
         event.preventDefault();
-
         setSenderOpen(true);
-
         return;
       }
-
 
       if (
         event.key === "?"
       ) {
         event.preventDefault();
-
         setShortcutsOpen(true);
-
         return;
       }
-
 
       const tabs:
         Record<
@@ -520,7 +508,6 @@ function EndpointWorkspace({
         && selectedRequestId
       ) {
         event.preventDefault();
-
         setInspectorTab(tab);
       }
     };
@@ -552,7 +539,8 @@ function EndpointWorkspace({
       () => [
         {
           id: "send-test",
-          label: "Send test request",
+          label:
+            "Send test request",
           description:
             "Open the HTTP test sender",
           shortcut: "T",
@@ -565,10 +553,10 @@ function EndpointWorkspace({
             setSenderOpen(true);
           },
         },
-
         {
           id: "focus-search",
-          label: "Focus request search",
+          label:
+            "Focus request search",
           shortcut: "/",
           keywords: [
             "find",
@@ -581,10 +569,10 @@ function EndpointWorkspace({
               ?.focus();
           },
         },
-
         {
           id: "next-request",
-          label: "Select next request",
+          label:
+            "Select next request",
           shortcut: "J",
           keywords: [
             "next",
@@ -596,7 +584,6 @@ function EndpointWorkspace({
             selectRelativeRequest(1);
           },
         },
-
         {
           id: "previous-request",
           label:
@@ -612,7 +599,6 @@ function EndpointWorkspace({
             selectRelativeRequest(-1);
           },
         },
-
         {
           id: "toggle-focus",
           label:
@@ -627,14 +613,15 @@ function EndpointWorkspace({
           ],
           run: () => {
             setFocusMode(
-              (enabled) => !enabled,
+              (enabled) =>
+                !enabled,
             );
           },
         },
-
         {
           id: "copy-url",
-          label: "Copy ingest URL",
+          label:
+            "Copy ingest URL",
           description:
             endpoint?.ingest_url,
           keywords: [
@@ -645,7 +632,6 @@ function EndpointWorkspace({
           disabled: !endpoint,
           run: copyIngestUrl,
         },
-
         {
           id: "overview",
           label: "Open Overview",
@@ -658,7 +644,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "headers",
           label: "Open Headers",
@@ -671,7 +656,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "body",
           label: "Open Body",
@@ -684,7 +668,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "query",
           label: "Open Query",
@@ -697,7 +680,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "raw",
           label: "Open Raw",
@@ -710,7 +692,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "shortcuts",
           label:
@@ -724,7 +705,6 @@ function EndpointWorkspace({
             setShortcutsOpen(true);
           },
         },
-
         {
           id: "dashboard",
           label: "Open endpoints",
@@ -742,7 +722,6 @@ function EndpointWorkspace({
             );
           },
         },
-
         {
           id: "delete-request",
           label:
@@ -754,7 +733,6 @@ function EndpointWorkspace({
             !selectedRequestId,
           run: deleteSelected,
         },
-
         {
           id: "clear-history",
           label:
@@ -792,7 +770,7 @@ function EndpointWorkspace({
           + "items-center "
           + "justify-center "
           + "bg-zinc-950 "
-          + "text-zinc-500"
+          + "text-sm text-zinc-500"
         }
       >
         Loading workspace…
@@ -812,6 +790,7 @@ function EndpointWorkspace({
           + "items-center "
           + "justify-center "
           + "bg-zinc-950 "
+          + "px-6 text-center "
           + "text-red-400"
         }
       >
@@ -865,12 +844,20 @@ function EndpointWorkspace({
           focusMode={
             focusMode
           }
+          onBack={() => {
+            navigate(
+              authenticated
+                ? "/app/endpoints"
+                : "/",
+            );
+          }}
           onSendTest={() =>
             setSenderOpen(true)
           }
           onToggleFocus={() =>
             setFocusMode(
-              (enabled) => !enabled,
+              (enabled) =>
+                !enabled,
             )
           }
           onOpenCommands={() =>
@@ -885,25 +872,59 @@ function EndpointWorkspace({
           className={
             "grid min-h-0 flex-1 "
             + "grid-cols-1 "
-            + "lg:grid-cols-"
-            + "[minmax(300px,36%)_minmax(0,1fr)]"
+            + "lg:grid-cols-5"
           }
         >
           <section
+            aria-label="Captured requests"
             className={
-              "flex min-h-0 "
-              + "flex-col "
-              + "border-r "
-              + "border-zinc-800"
+              "min-h-0 flex-col "
+              + "border-zinc-800/80 "
+              + (
+                selectedRequestId
+                  ? "hidden lg:flex"
+                  : "flex"
+              )
+              + " lg:col-span-2 "
+              + "lg:border-r"
             }
           >
             <div
               className={
-                "border-b "
-                + "border-zinc-800 "
+                "shrink-0 border-b "
+                + "border-zinc-800/80 "
                 + "p-3"
               }
             >
+              <div
+                className={
+                  "mb-2 flex "
+                  + "items-center "
+                  + "justify-between "
+                  + "px-0.5"
+                }
+              >
+                <span
+                  className={
+                    "text-xs "
+                    + "font-medium "
+                    + "text-zinc-500"
+                  }
+                >
+                  Requests
+                </span>
+
+                <span
+                  className={
+                    "font-mono "
+                    + "text-[10px] "
+                    + "text-zinc-700"
+                  }
+                >
+                  {requests.length} loaded
+                </span>
+              </div>
+
               <div
                 className={
                   "flex gap-2"
@@ -916,6 +937,7 @@ function EndpointWorkspace({
                   }
                 >
                   <Search
+                    aria-hidden="true"
                     className={
                       "absolute left-3 "
                       + "top-1/2 "
@@ -925,67 +947,84 @@ function EndpointWorkspace({
                     }
                   />
 
+                  <label
+                    htmlFor={
+                      "request-search"
+                    }
+                    className="sr-only"
+                  >
+                    Search requests
+                  </label>
+
                   <input
+                    id="request-search"
                     ref={
                       searchInputRef
                     }
                     value={search}
                     onChange={(event) =>
                       setSearch(
-                        event.target.value
+                        event.target.value,
                       )
                     }
                     placeholder={
                       "Search requests  /"
                     }
                     className={
-                      "w-full rounded-md "
+                      "w-full rounded-lg "
                       + "border "
                       + "border-zinc-800 "
                       + "bg-zinc-900 "
-                      + "py-2 pl-9 pr-3 "
-                      + "text-sm "
-                      + "outline-none "
-                      + "focus:border-zinc-600"
+                      + "py-2.5 pl-9 "
+                      + "pr-3 text-sm "
+                      + "text-zinc-200 "
+                      + "placeholder:text-zinc-600 "
+                      + "focus:border-cyan-700"
                     }
                   />
                 </div>
 
+                <label
+                  htmlFor={
+                    "method-filter"
+                  }
+                  className="sr-only"
+                >
+                  Filter by method
+                </label>
+
                 <select
+                  id="method-filter"
                   value={method}
                   onChange={(event) =>
                     setMethod(
-                      event.target.value
+                      event.target.value,
                     )
                   }
                   className={
-                    "rounded-md "
-                    + "border "
+                    "rounded-lg border "
                     + "border-zinc-800 "
                     + "bg-zinc-900 "
-                    + "px-2 text-xs"
+                    + "px-2.5 text-xs "
+                    + "text-zinc-400 "
+                    + "focus:border-cyan-700"
                   }
                 >
                   <option value="">
                     All
                   </option>
-
                   <option value="GET">
                     GET
                   </option>
-
                   <option value="POST">
                     POST
                   </option>
-
                   <option value="PUT">
                     PUT
                   </option>
-
                   <option value="PATCH">
                     PATCH
                   </option>
-
                   <option value="DELETE">
                     DELETE
                   </option>
@@ -993,22 +1032,28 @@ function EndpointWorkspace({
 
                 <button
                   type="button"
+                  aria-label={
+                    "Clear request history"
+                  }
                   title="Clear history"
                   disabled={
                     clearRequests
                       .isPending
+                    || requests.length
+                    === 0
                   }
                   onClick={
                     clearHistory
                   }
                   className={
-                    "rounded-md "
+                    "rounded-lg "
                     + "border "
                     + "border-zinc-800 "
-                    + "p-2 "
-                    + "text-zinc-500 "
+                    + "p-2.5 "
+                    + "text-zinc-600 "
+                    + "hover:bg-red-950/20 "
                     + "hover:text-red-400 "
-                    + "disabled:opacity-50"
+                    + "disabled:opacity-40"
                   }
                 >
                   <Trash2
@@ -1062,7 +1107,16 @@ function EndpointWorkspace({
           </section>
 
           <section
-            className="min-h-0"
+            aria-label="Request inspector"
+            className={
+              "min-h-0 "
+              + "lg:col-span-3 "
+              + (
+                selectedRequestId
+                  ? "block"
+                  : "hidden lg:block"
+              )
+            }
           >
             <RequestInspector
               request={
@@ -1076,7 +1130,7 @@ function EndpointWorkspace({
               }
               hasSelection={
                 Boolean(
-                  selectedRequestId
+                  selectedRequestId,
                 )
               }
               activeTab={
@@ -1084,6 +1138,9 @@ function EndpointWorkspace({
               }
               onTabChange={
                 setInspectorTab
+              }
+              onBack={
+                clearSelection
               }
               isDeleting={
                 deleteRequest
