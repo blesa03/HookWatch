@@ -25,6 +25,7 @@ jobs:
           --health-interval 5s
           --health-timeout 5s
           --health-retries 10
+
       redis:
         image: redis:8.2-alpine
         ports:
@@ -39,14 +40,21 @@ jobs:
       DJANGO_SECRET_KEY: hookwatch-ci-secret-key-long-enough-for-hs256-tests
       DJANGO_DEBUG: "false"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1
+
       POSTGRES_DB: hookwatch
       POSTGRES_USER: hookwatch
       POSTGRES_PASSWORD: hookwatch
       POSTGRES_HOST: localhost
       POSTGRES_PORT: 5432
+
       REDIS_URL: redis://localhost:6379/0
+
       WEBSOCKET_ALLOWED_ORIGINS: http://localhost:5173
       HOOKWATCH_WS_TICKET_TTL: 30
+
+      HOOKWATCH_REDIS_SOCKET_TIMEOUT: 0.25
+      HOOKWATCH_INGEST_RATE_LIMIT: 120
+      HOOKWATCH_INGEST_RATE_WINDOW_SECONDS: 60
 
     defaults:
       run:
@@ -77,8 +85,13 @@ jobs:
       - name: Ruff
         run: ruff check .
 
-      - name: Tests
-        run: pytest
+      - name: Tests with coverage
+        run: >
+          pytest
+          --cov=accounts
+          --cov=config
+          --cov=hooks
+          --cov-report=term-missing
 
   frontend:
     name: Frontend
@@ -105,5 +118,14 @@ jobs:
       - name: Lint
         run: npm run lint
 
+      - name: Unit tests
+        run: npm run test:run
+
       - name: Build
         run: npm run build
+
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: E2E smoke tests
+        run: npm run test:e2e
