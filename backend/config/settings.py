@@ -294,3 +294,76 @@ HOOKWATCH_TEST_REQUEST_TIMEOUT = float(
         "5",
     )
 )
+
+HOOKWATCH_REDIS_SOCKET_TIMEOUT = float(
+    os.getenv(
+        "HOOKWATCH_REDIS_SOCKET_TIMEOUT",
+        "0.25",
+    )
+)
+
+HOOKWATCH_INGEST_RATE_LIMIT = int(
+    os.getenv(
+        "HOOKWATCH_INGEST_RATE_LIMIT",
+        "120",
+    )
+)
+
+HOOKWATCH_INGEST_RATE_WINDOW_SECONDS = int(
+    os.getenv(
+        (
+            "HOOKWATCH_INGEST_"
+            "RATE_WINDOW_SECONDS"
+        ),
+        "60",
+    )
+)
+
+HOOKWATCH_TRUSTED_PROXY_NETWORKS = [
+    network.strip()
+    for network in os.getenv(
+        (
+            "HOOKWATCH_TRUSTED_"
+            "PROXY_NETWORKS"
+        ),
+        "",
+    ).split(",")
+    if network.strip()
+]
+
+HOOKWATCH_TEMPORARY_CLEANUP_INTERVAL_SECONDS = int(
+    os.getenv(
+        (
+            "HOOKWATCH_TEMPORARY_"
+            "CLEANUP_INTERVAL_SECONDS"
+        ),
+        "3600",
+    )
+)
+
+
+CELERY_BROKER_URL = REDIS_URL
+
+CELERY_TASK_IGNORE_RESULT = True
+
+CELERY_TASK_SERIALIZER = "json"
+
+CELERY_ACCEPT_CONTENT = [
+    "json",
+]
+
+CELERY_TIMEZONE = TIME_ZONE
+
+CELERY_BROKER_CONNECTION_RETRY_ON_STARTUP = True
+
+CELERY_BEAT_SCHEDULE = {
+    "cleanup-expired-temporary-endpoints": {
+        "task": (
+            "hooks.cleanup_expired_"
+            "temporary_endpoints"
+        ),
+        "schedule": float(
+            HOOKWATCH_TEMPORARY_CLEANUP_INTERVAL_SECONDS
+        ),
+    },
+}

@@ -8,7 +8,14 @@ from django.http import (
 )
 from django.views.decorators.csrf import csrf_exempt
 
-from .models import Endpoint, WebhookRequest
+from .client_ip import get_source_ip
+from .models import (
+    Endpoint,
+    WebhookRequest,
+)
+from .rate_limit import (
+    check_ingest_rate_limit,
+)
 from .realtime.events import (
     queue_webhook_received,
 )
@@ -75,14 +82,6 @@ def _headers(
     }
 
 
-def _source_ip(
-    request: HttpRequest,
-) -> str | None:
-    return request.META.get(
-        "REMOTE_ADDR"
-    )
-
-
 def _content_type(
     request: HttpRequest,
 ) -> str:
@@ -96,14 +95,20 @@ def _is_json_content_type(
     content_type: str,
 ) -> bool:
     media_type = (
-        content_type.split(";", 1)[0]
+        content_type.split(
+            ";",
+            1,
+        )[0]
         .strip()
         .lower()
     )
 
     return (
-        media_type == "application/json"
-        or media_type.endswith("+json")
+        media_type
+        == "application/json"
+        or media_type.endswith(
+            "+json"
+        )
     )
 
 
@@ -146,7 +151,10 @@ def _content_length_exceeds_limit(
         content_length = int(
             raw_content_length
         )
-    except (TypeError, ValueError):
+    except (
+        TypeError,
+        ValueError,
+    ):
         return False
 
     return (
@@ -164,7 +172,8 @@ def _read_body(
         return None
 
     body = request.read(
-        settings.HOOKWATCH_MAX_BODY_SIZE
+        settings
+        .HOOKWATCH_MAX_BODY_SIZE
         + 1
     )
 
@@ -192,7 +201,10 @@ def ingest_webhook(
     ingest_token: str,
     request_path: str = "",
 ) -> JsonResponse:
-    if request.method not in ALLOWED_METHODS:
+    if (
+        request.method
+        not in ALLOWED_METHODS
+    ):
         response = _error_response(
             "method_not_allowed",
             "Method not allowed.",
@@ -233,6 +245,35 @@ def ingest_webhook(
             status=410,
         )
 
+    source_ip = get_source_ip(
+        request
+    )
+
+    rate_limit = (
+        check_ingest_rate_limit(
+            endpoint_id=endpoint.id,
+            source_ip=source_ip,
+        )
+    )
+
+    if not rate_limit.allowed:
+        response = _error_response(
+            "rate_limited",
+            (
+                "Too many requests. "
+                "Try again later."
+            ),
+            status=429,
+        )
+
+        response[
+            "Retry-After"
+        ] = str(
+            rate_limit.retry_after
+        )
+
+        return response
+
     body = _read_body(request)
 
     if body is None:
@@ -254,23 +295,29 @@ def ingest_webhook(
                 path=_captured_path(
                     request_path
                 ),
-                headers=_headers(request),
-                query_params=_query_params(
+                headers=_headers(
                     request
                 ),
-                content_type=content_type,
+                query_params=(
+                    _query_params(
+                        request
+                    )
+                ),
+                content_type=(
+                    content_type
+                ),
                 body_raw=body,
-                parsed_json=_parse_json(
-                    body,
-                    content_type,
+                parsed_json=(
+                    _parse_json(
+                        body,
+                        content_type,
+                    )
                 ),
                 body_size=len(body),
-                source_ip=_source_ip(
-                    request
-                ),
+                source_ip=source_ip,
             )
         )
-        
+
         queue_webhook_received(
             captured_request
         )

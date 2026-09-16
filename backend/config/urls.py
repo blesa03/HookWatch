@@ -1,16 +1,13 @@
 from django.contrib import admin
-from django.http import JsonResponse
-from django.urls import include, path
+from django.urls import (
+    include,
+    path,
+)
 
-
-def health_check(_request):
-    return JsonResponse(
-        {
-            "status": "ok",
-            "service": "hookwatch-api",
-        }
-    )
-
+from .health import (
+    liveness_check,
+    readiness_check,
+)
 
 urlpatterns = [
     path(
@@ -19,18 +16,32 @@ urlpatterns = [
     ),
     path(
         "api/v1/health/",
-        health_check,
+        liveness_check,
+    ),
+    path(
+        "api/v1/health/live/",
+        liveness_check,
+    ),
+    path(
+        "api/v1/health/ready/",
+        readiness_check,
     ),
     path(
         "api/v1/auth/",
-        include("accounts.urls"),
+        include(
+            "accounts.urls"
+        ),
     ),
     path(
         "api/v1/",
-        include("hooks.api_urls"),
+        include(
+            "hooks.api_urls"
+        ),
     ),
     path(
         "hooks/",
-        include("hooks.ingest_urls"),
+        include(
+            "hooks.ingest_urls"
+        ),
     ),
 ]
