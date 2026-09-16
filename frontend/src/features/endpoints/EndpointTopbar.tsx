@@ -12,6 +12,9 @@ import {
 import {
   useState,
 } from "react";
+import {
+  useTranslation,
+} from "react-i18next";
 
 import type {
   SocketStatus,
@@ -19,6 +22,9 @@ import type {
 import type {
   Endpoint,
 } from "./types";
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 
 interface EndpointTopbarProps {
@@ -34,28 +40,6 @@ interface EndpointTopbarProps {
 }
 
 
-function statusLabel(
-  status: SocketStatus,
-): string {
-  switch (status) {
-    case "connected":
-      return "Live";
-
-    case "connecting":
-      return "Connecting";
-
-    case "reconnecting":
-      return "Reconnecting";
-
-    case "unavailable":
-      return "Realtime unavailable";
-
-    default:
-      return "Disconnected";
-  }
-}
-
-
 export function EndpointTopbar({
   endpoint,
   socketStatus,
@@ -66,6 +50,10 @@ export function EndpointTopbar({
   onOpenCommands,
   onOpenShortcuts,
 }: EndpointTopbarProps) {
+  const {
+    t,
+  } = useTranslation();
+
   const [
     copied,
     setCopied,
@@ -96,6 +84,30 @@ export function EndpointTopbar({
   const live =
     socketStatus === "connected";
 
+  const statusLabels:
+    Record<
+      SocketStatus,
+      string
+    > = {
+      connected:
+        t("topbar.connected"),
+
+      connecting:
+        t("topbar.connecting"),
+
+      reconnecting:
+        t("topbar.reconnecting"),
+
+      unavailable:
+        t("topbar.unavailable"),
+
+      disconnected:
+        t("topbar.disconnected"),
+    };
+
+  const socketStatusLabel =
+    statusLabels[socketStatus];
+
 
   return (
     <header
@@ -111,7 +123,9 @@ export function EndpointTopbar({
       {onBack && (
         <button
           type="button"
-          aria-label="Back"
+          aria-label={
+            t("topbar.back")
+          }
           onClick={onBack}
           className={
             "shrink-0 rounded-lg "
@@ -162,7 +176,7 @@ export function EndpointTopbar({
                 + "sm:inline"
               }
             >
-              Focus
+              {t("topbar.focus")}
             </span>
           )}
         </div>
@@ -188,11 +202,11 @@ export function EndpointTopbar({
           + "sm:gap-2"
         }
       >
+        <LanguageSwitcher compact />
+        
         <div
           title={
-            statusLabel(
-              socketStatus,
-            )
+            socketStatusLabel
           }
           className={
             "inline-flex h-9 "
@@ -220,17 +234,21 @@ export function EndpointTopbar({
               "hidden xl:inline"
             }
           >
-            {statusLabel(
-              socketStatus,
-            )}
+            {socketStatusLabel}
           </span>
         </div>
 
         <button
           type="button"
-          title="Command palette (P)"
+          title={
+            `${t(
+              "topbar.commandPalette",
+            )} (P)`
+          }
           aria-label={
-            "Open command palette"
+            t(
+              "topbar.commandPalette",
+            )
           }
           onClick={
             onOpenCommands
@@ -251,7 +269,7 @@ export function EndpointTopbar({
             className="size-3.5"
           />
 
-          Commands
+          {t("topbar.commands")}
 
           <kbd
             className={
@@ -265,8 +283,16 @@ export function EndpointTopbar({
 
         <button
           type="button"
-          title="Send test request (T)"
-          aria-label="Send test request"
+          title={
+            `${t(
+              "topbar.sendTestTitle",
+            )} (T)`
+          }
+          aria-label={
+            t(
+              "topbar.sendTestTitle",
+            )
+          }
           onClick={
             onSendTest
           }
@@ -289,7 +315,7 @@ export function EndpointTopbar({
               "hidden sm:inline"
             }
           >
-            Send test
+            {t("topbar.sendTest")}
           </span>
         </button>
 
@@ -297,20 +323,33 @@ export function EndpointTopbar({
           type="button"
           title={
             focusMode
-              ? "Exit Focus Mode (F)"
-              : "Focus Mode (F)"
+              ? (
+                `${t(
+                  "topbar.exitFocus",
+                )} (F)`
+              )
+              : (
+                `${t(
+                  "topbar.enterFocus",
+                )} (F)`
+              )
           }
           aria-label={
             focusMode
-              ? "Exit Focus Mode"
-              : "Enter Focus Mode"
+              ? t(
+                "topbar.exitFocus",
+              )
+              : t(
+                "topbar.enterFocus",
+              )
           }
           onClick={
             onToggleFocus
           }
           className={
             "h-9 rounded-lg "
-            + "border border-zinc-800 "
+            + "border "
+            + "border-zinc-800 "
             + "px-2.5 text-zinc-500 "
             + "hover:bg-zinc-900 "
             + "hover:text-zinc-300"
@@ -332,10 +371,12 @@ export function EndpointTopbar({
         <button
           type="button"
           title={
-            "Keyboard shortcuts (?)"
+            `${t(
+              "topbar.shortcuts",
+            )} (?)`
           }
           aria-label={
-            "Keyboard shortcuts"
+            t("topbar.shortcuts")
           }
           onClick={
             onOpenShortcuts
@@ -357,8 +398,16 @@ export function EndpointTopbar({
 
         <button
           type="button"
-          title="Copy ingest URL"
-          aria-label="Copy ingest URL"
+          title={
+            t(
+              "topbar.copyUrlTitle",
+            )
+          }
+          aria-label={
+            t(
+              "topbar.copyUrlTitle",
+            )
+          }
           onClick={() => {
             void copyUrl();
           }}
@@ -393,8 +442,8 @@ export function EndpointTopbar({
             }
           >
             {copied
-              ? "Copied"
-              : "Copy URL"}
+              ? t("topbar.copied")
+              : t("topbar.copyUrl")}
           </span>
         </button>
       </div>

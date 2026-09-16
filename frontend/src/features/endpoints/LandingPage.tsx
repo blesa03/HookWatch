@@ -10,9 +10,16 @@ import {
   useState,
 } from "react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   Link,
   useNavigate,
 } from "react-router-dom";
+
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 import {
   createAnonymousEndpoint,
@@ -25,6 +32,10 @@ import {
 export function LandingPage() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const [
     creating,
@@ -63,7 +74,9 @@ export function LandingPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Could not create endpoint.",
+          : t(
+            "landing.createError",
+          ),
       );
     } finally {
       setCreating(false);
@@ -120,12 +133,16 @@ export function LandingPage() {
           </Link>
 
           <nav
-            aria-label="Main navigation"
+            aria-label={
+              t("landing.navigation")
+            }
             className={
               "ml-auto flex "
               + "items-center gap-2"
             }
           >
+            <LanguageSwitcher compact />
+
             <Link
               to="/login"
               className={
@@ -136,7 +153,7 @@ export function LandingPage() {
                 + "hover:text-zinc-100"
               }
             >
-              Sign in
+              {t("landing.signIn")}
             </Link>
 
             <Link
@@ -153,7 +170,9 @@ export function LandingPage() {
                 + "sm:block"
               }
             >
-              Create account
+              {t(
+                "landing.createAccount",
+              )}
             </Link>
           </nav>
         </div>
@@ -182,12 +201,12 @@ export function LandingPage() {
           >
             <Radio
               className={
-                "size-3.5 text-emerald-400"
+                "size-3.5 "
+                + "text-emerald-400"
               }
             />
 
-            Webhook inspection,
-            live.
+            {t("landing.badge")}
           </div>
 
           <h1
@@ -200,8 +219,7 @@ export function LandingPage() {
               + "sm:text-6xl"
             }
           >
-            See your webhooks the
-            moment they happen.
+            {t("landing.title")}
           </h1>
 
           <p
@@ -212,11 +230,9 @@ export function LandingPage() {
               + "sm:text-lg"
             }
           >
-            Generate an endpoint,
-            send requests to it and
-            inspect headers, query
-            parameters and payloads
-            in real time.
+            {t(
+              "landing.description",
+            )}
           </p>
 
           <div
@@ -245,10 +261,12 @@ export function LandingPage() {
               }
             >
               {creating
-                ? "Creating…"
+                ? t("landing.creating")
                 : (
                   <>
-                    Try without an account
+                    {t(
+                      "landing.tryWithoutAccount",
+                    )}
 
                     <ArrowRight
                       className="size-4"
@@ -274,7 +292,9 @@ export function LandingPage() {
                 + "hover:text-zinc-100"
               }
             >
-              Create account
+              {t(
+                "landing.createAccount",
+              )}
             </Link>
           </div>
 
@@ -308,8 +328,10 @@ export function LandingPage() {
               }
             >
               <Clock3 className="size-4" />
-              Temporary endpoints last
-              24 hours
+
+              {t(
+                "landing.temporaryLifetime",
+              )}
             </span>
 
             <span
@@ -321,14 +343,17 @@ export function LandingPage() {
               <ShieldCheck
                 className="size-4"
               />
-              No account required
+
+              {t(
+                "landing.noAccountRequired",
+              )}
             </span>
           </div>
         </section>
 
         <section
           aria-label={
-            "Webhook preview"
+            t("landing.preview")
           }
           className={
             "relative mx-auto w-full "
@@ -367,12 +392,14 @@ export function LandingPage() {
                   + "bg-red-400/70"
                 }
               />
+
               <span
                 className={
                   "size-2.5 rounded-full "
                   + "bg-amber-400/70"
                 }
               />
+
               <span
                 className={
                   "size-2.5 rounded-full "
@@ -394,7 +421,8 @@ export function LandingPage() {
                     + "bg-emerald-400"
                   }
                 />
-                Live
+
+                {t("landing.live")}
               </span>
             </div>
 
@@ -427,8 +455,7 @@ export function LandingPage() {
                   >
                     <span
                       className={
-                        "rounded bg-"
-                        + "emerald-950 "
+                        "rounded bg-emerald-950 "
                         + "px-1.5 py-0.5 "
                         + "font-mono "
                         + "text-[10px] "
@@ -441,8 +468,8 @@ export function LandingPage() {
 
                     <span
                       className={
-                        "truncate "
-                        + "font-mono text-xs "
+                        "truncate font-mono "
+                        + "text-xs "
                         + "text-zinc-300"
                       }
                     >
@@ -456,7 +483,9 @@ export function LandingPage() {
                       + "text-zinc-600"
                     }
                   >
-                    just now · 2.1 KB
+                    {t(
+                      "landing.justNow",
+                    )}
                   </p>
                 </div>
 
@@ -506,7 +535,8 @@ export function LandingPage() {
                 >
                   <Braces
                     className={
-                      "size-4 text-cyan-400"
+                      "size-4 "
+                      + "text-cyan-400"
                     }
                   />
 

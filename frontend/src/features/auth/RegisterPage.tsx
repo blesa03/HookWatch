@@ -9,9 +9,16 @@ import {
   useForm,
 } from "react-hook-form";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   Link,
   useNavigate,
 } from "react-router-dom";
+
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 import {
   useAuth,
@@ -27,6 +34,10 @@ interface FormValues {
 export function RegisterPage() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const {
     register: registerUser,
@@ -65,7 +76,9 @@ export function RegisterPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Registration failed.",
+          : t(
+            "auth.registrationFailed",
+          ),
       );
     }
   };
@@ -83,19 +96,31 @@ export function RegisterPage() {
       }
     >
       <div className="w-full max-w-md">
-        <Link
-          to="/"
+        <div
           className={
-            "mb-8 inline-flex "
-            + "items-center gap-2 "
-            + "text-sm text-zinc-500 "
-            + "transition-colors "
-            + "hover:text-zinc-200"
+            "mb-8 flex items-center "
+            + "justify-between gap-4"
           }
         >
-          <ArrowLeft className="size-4" />
-          Back to HookWatch
-        </Link>
+          <Link
+            to="/"
+            className={
+              "inline-flex items-center "
+              + "gap-2 text-sm "
+              + "text-zinc-500 "
+              + "transition-colors "
+              + "hover:text-zinc-200"
+            }
+          >
+            <ArrowLeft
+              className="size-4"
+            />
+
+            {t("auth.back")}
+          </Link>
+
+          <LanguageSwitcher compact />
+        </div>
 
         <section
           className={
@@ -131,18 +156,19 @@ export function RegisterPage() {
               + "tracking-tight"
             }
           >
-            Create account
+            {t("auth.registerTitle")}
           </h1>
 
           <p
             className={
               "mt-2 text-sm "
-              + "leading-6 text-zinc-500"
+              + "leading-6 "
+              + "text-zinc-500"
             }
           >
-            Keep your endpoints and
-            request history between
-            sessions.
+            {t(
+              "auth.registerDescription",
+            )}
           </p>
 
           <form
@@ -159,7 +185,7 @@ export function RegisterPage() {
                   + "text-zinc-300"
                 }
               >
-                Email
+                {t("auth.email")}
               </span>
 
               <input
@@ -182,13 +208,17 @@ export function RegisterPage() {
                   + "focus:border-cyan-700"
                 }
                 placeholder={
-                  "you@example.com"
+                  t(
+                    "auth.emailPlaceholder",
+                  )
                 }
                 {...register(
                   "email",
                   {
                     required:
-                      "Email is required.",
+                      t(
+                        "auth.emailRequired",
+                      ),
                   },
                 )}
               />
@@ -213,7 +243,7 @@ export function RegisterPage() {
                   + "text-zinc-300"
                 }
               >
-                Password
+                {t("auth.password")}
               </span>
 
               <input
@@ -240,7 +270,9 @@ export function RegisterPage() {
                   "password",
                   {
                     required:
-                      "Password is required.",
+                      t(
+                        "auth.passwordRequired",
+                      ),
                   },
                 )}
               />
@@ -292,8 +324,12 @@ export function RegisterPage() {
               }
             >
               {isSubmitting
-                ? "Creating account…"
-                : "Create account"}
+                ? t(
+                  "auth.creatingAccount",
+                )
+                : t(
+                  "auth.createAccount",
+                )}
             </button>
           </form>
 
@@ -303,7 +339,9 @@ export function RegisterPage() {
               + "text-sm text-zinc-500"
             }
           >
-            Already registered?{" "}
+            {t(
+              "auth.alreadyRegistered",
+            )}{" "}
 
             <Link
               to="/login"
@@ -313,7 +351,7 @@ export function RegisterPage() {
                 + "hover:text-cyan-300"
               }
             >
-              Sign in
+              {t("auth.signIn")}
             </Link>
           </p>
         </section>

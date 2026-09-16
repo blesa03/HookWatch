@@ -4,8 +4,18 @@ import {
 import "@testing-library/jest-dom/vitest";
 import {
   afterEach,
+  beforeEach,
   vi,
 } from "vitest";
+
+import i18n from "../i18n";
+
+
+beforeEach(async () => {
+  await i18n.changeLanguage(
+    "en",
+  );
+});
 
 
 afterEach(() => {
@@ -29,24 +39,29 @@ Object.defineProperty(
   {
     writable: true,
 
-    value: vi.fn().mockImplementation(
-      (query: string) => ({
-        matches: false,
-        media: query,
-        onchange: null,
+    value:
+      vi.fn()
+        .mockImplementation(
+          (query: string) => ({
+            matches: false,
+            media: query,
+            onchange: null,
 
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
+            addListener:
+              vi.fn(),
 
-        addEventListener:
-          vi.fn(),
+            removeListener:
+              vi.fn(),
 
-        removeEventListener:
-          vi.fn(),
+            addEventListener:
+              vi.fn(),
 
-        dispatchEvent:
-          vi.fn(),
-      }),
-    ),
+            removeEventListener:
+              vi.fn(),
+
+            dispatchEvent:
+              vi.fn(),
+          }),
+        ),
   },
 );

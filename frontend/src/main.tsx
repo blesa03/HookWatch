@@ -16,6 +16,8 @@ import App from "./App.tsx";
 import {
   AuthProvider,
 } from "./features/auth/AuthProvider";
+
+import "./i18n";
 import "./index.css";
 
 

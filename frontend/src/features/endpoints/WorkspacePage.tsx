@@ -11,6 +11,9 @@ import {
   Trash2,
 } from "lucide-react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   Navigate,
   useNavigate,
   useParams,
@@ -96,6 +99,10 @@ function EndpointWorkspace({
 }: EndpointWorkspaceProps) {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const [
     searchParams,
@@ -315,7 +322,9 @@ function EndpointWorkspace({
 
       if (
         !window.confirm(
-          "Delete this request?",
+          t(
+            "workspace.deleteConfirm",
+          ),
         )
       ) {
         return;
@@ -333,6 +342,7 @@ function EndpointWorkspace({
       selectedRequestId,
       deleteRequest,
       clearSelection,
+      t,
     ]);
 
 
@@ -340,7 +350,9 @@ function EndpointWorkspace({
     useCallback(() => {
       if (
         !window.confirm(
-          "Clear all captured requests?",
+          t(
+            "workspace.clearConfirm",
+          ),
         )
       ) {
         return;
@@ -357,6 +369,7 @@ function EndpointWorkspace({
     }, [
       clearRequests,
       clearSelection,
+      t,
     ]);
 
 
@@ -539,78 +552,130 @@ function EndpointWorkspace({
       () => [
         {
           id: "send-test",
+
           label:
-            "Send test request",
+            t(
+              "workspace.commands.sendTest",
+            ),
+
           description:
-            "Open the HTTP test sender",
+            t(
+              "workspace.commands."
+              + "sendTestDescription",
+            ),
+
           shortcut: "T",
+
           keywords: [
             "http",
             "webhook",
             "sender",
+            "enviar",
+            "prueba",
           ],
+
           run: () => {
             setSenderOpen(true);
           },
         },
+
         {
           id: "focus-search",
+
           label:
-            "Focus request search",
+            t(
+              "workspace.commands."
+              + "focusSearch",
+            ),
+
           shortcut: "/",
+
           keywords: [
             "find",
             "filter",
             "search",
+            "buscar",
+            "filtrar",
           ],
+
           run: () => {
             searchInputRef
               .current
               ?.focus();
           },
         },
+
         {
           id: "next-request",
+
           label:
-            "Select next request",
+            t(
+              "workspace.commands.next",
+            ),
+
           shortcut: "J",
+
           keywords: [
             "next",
             "down",
+            "siguiente",
           ],
+
           disabled:
             requests.length === 0,
+
           run: () => {
             selectRelativeRequest(1);
           },
         },
+
         {
           id: "previous-request",
+
           label:
-            "Select previous request",
+            t(
+              "workspace.commands.previous",
+            ),
+
           shortcut: "K",
+
           keywords: [
             "previous",
             "up",
+            "anterior",
           ],
+
           disabled:
             requests.length === 0,
+
           run: () => {
             selectRelativeRequest(-1);
           },
         },
+
         {
           id: "toggle-focus",
+
           label:
             focusMode
-              ? "Exit Focus Mode"
-              : "Enter Focus Mode",
+              ? t(
+                "workspace.commands."
+                + "exitFocus",
+              )
+              : t(
+                "workspace.commands."
+                + "enterFocus",
+              ),
+
           shortcut: "F",
+
           keywords: [
             "fullscreen",
             "sidebar",
             "focus",
+            "foco",
           ],
+
           run: () => {
             setFocusMode(
               (enabled) =>
@@ -618,130 +683,225 @@ function EndpointWorkspace({
             );
           },
         },
+
         {
           id: "copy-url",
+
           label:
-            "Copy ingest URL",
+            t(
+              "workspace.commands.copyUrl",
+            ),
+
           description:
             endpoint?.ingest_url,
+
           keywords: [
             "copy",
             "endpoint",
             "url",
+            "copiar",
           ],
+
           disabled: !endpoint,
+
           run: copyIngestUrl,
         },
+
         {
           id: "overview",
-          label: "Open Overview",
+
+          label:
+            t(
+              "workspace.commands.overview",
+            ),
+
           shortcut: "1",
+
           disabled:
             !selectedRequestId,
+
           run: () => {
             setInspectorTab(
               "overview",
             );
           },
         },
+
         {
           id: "headers",
-          label: "Open Headers",
+
+          label:
+            t(
+              "workspace.commands.headers",
+            ),
+
           shortcut: "2",
+
           disabled:
             !selectedRequestId,
+
           run: () => {
             setInspectorTab(
               "headers",
             );
           },
         },
+
         {
           id: "body",
-          label: "Open Body",
+
+          label:
+            t(
+              "workspace.commands.body",
+            ),
+
           shortcut: "3",
+
           disabled:
             !selectedRequestId,
+
           run: () => {
             setInspectorTab(
               "body",
             );
           },
         },
+
         {
           id: "query",
-          label: "Open Query",
+
+          label:
+            t(
+              "workspace.commands.query",
+            ),
+
           shortcut: "4",
+
           disabled:
             !selectedRequestId,
+
           run: () => {
             setInspectorTab(
               "query",
             );
           },
         },
+
         {
           id: "raw",
-          label: "Open Raw",
+
+          label:
+            t(
+              "workspace.commands.raw",
+            ),
+
           shortcut: "5",
+
           disabled:
             !selectedRequestId,
+
           run: () => {
             setInspectorTab(
               "raw",
             );
           },
         },
+
         {
           id: "shortcuts",
+
           label:
-            "Show keyboard shortcuts",
+            t(
+              "workspace.commands.shortcuts",
+            ),
+
           shortcut: "?",
+
           keywords: [
             "help",
             "keys",
+            "ayuda",
+            "atajos",
           ],
+
           run: () => {
             setShortcutsOpen(true);
           },
         },
+
         {
           id: "dashboard",
-          label: "Open endpoints",
+
+          label:
+            t(
+              "workspace.commands.dashboard",
+            ),
+
           description:
-            "Return to endpoint dashboard",
+            t(
+              "workspace.commands."
+              + "dashboardDescription",
+            ),
+
           keywords: [
             "dashboard",
             "endpoints",
+            "panel",
           ],
+
           disabled:
             !authenticated,
+
           run: () => {
             navigate(
               "/app/endpoints",
             );
           },
         },
+
         {
           id: "delete-request",
+
           label:
-            "Delete selected request",
+            t(
+              "workspace.commands."
+              + "deleteRequest",
+            ),
+
           description:
-            "Permanently remove this capture",
+            t(
+              "workspace.commands."
+              + "deleteRequestDescription",
+            ),
+
           danger: true,
+
           disabled:
             !selectedRequestId,
+
           run: deleteSelected,
         },
+
         {
           id: "clear-history",
+
           label:
-            "Clear request history",
+            t(
+              "workspace.commands."
+              + "clearHistory",
+            ),
+
           description:
-            "Delete all captured requests",
+            t(
+              "workspace.commands."
+              + "clearHistoryDescription",
+            ),
+
           danger: true,
+
           disabled:
             requests.length === 0,
+
           run: clearHistory,
         },
       ],
@@ -756,6 +916,7 @@ function EndpointWorkspace({
         requests.length,
         selectedRequestId,
         selectRelativeRequest,
+        t,
       ],
     );
 
@@ -773,7 +934,7 @@ function EndpointWorkspace({
           + "text-sm text-zinc-500"
         }
       >
-        Loading workspace…
+        {t("workspace.loading")}
       </div>
     );
   }
@@ -798,7 +959,9 @@ function EndpointWorkspace({
           endpointQuery
             .error
             ?.message
-          ?? "Endpoint not found."
+          ?? t(
+            "workspace.notFound",
+          )
         }
       </div>
     );
@@ -876,7 +1039,11 @@ function EndpointWorkspace({
           }
         >
           <section
-            aria-label="Captured requests"
+            aria-label={
+              t(
+                "workspace.capturedRequests",
+              )
+            }
             className={
               "min-h-0 flex-col "
               + "border-zinc-800/80 "
@@ -911,7 +1078,9 @@ function EndpointWorkspace({
                     + "text-zinc-500"
                   }
                 >
-                  Requests
+                  {t(
+                    "workspace.requests",
+                  )}
                 </span>
 
                 <span
@@ -921,7 +1090,13 @@ function EndpointWorkspace({
                     + "text-zinc-700"
                   }
                 >
-                  {requests.length} loaded
+                  {t(
+                    "workspace.loaded",
+                    {
+                      count:
+                        requests.length,
+                    },
+                  )}
                 </span>
               </div>
 
@@ -953,7 +1128,9 @@ function EndpointWorkspace({
                     }
                     className="sr-only"
                   >
-                    Search requests
+                    {t(
+                      "workspace.search",
+                    )}
                   </label>
 
                   <input
@@ -968,7 +1145,9 @@ function EndpointWorkspace({
                       )
                     }
                     placeholder={
-                      "Search requests  /"
+                      t(
+                        "workspace.searchPlaceholder",
+                      )
                     }
                     className={
                       "w-full rounded-lg "
@@ -990,7 +1169,9 @@ function EndpointWorkspace({
                   }
                   className="sr-only"
                 >
-                  Filter by method
+                  {t(
+                    "workspace.methodFilter",
+                  )}
                 </label>
 
                 <select
@@ -1011,20 +1192,25 @@ function EndpointWorkspace({
                   }
                 >
                   <option value="">
-                    All
+                    {t("common.all")}
                   </option>
+
                   <option value="GET">
                     GET
                   </option>
+
                   <option value="POST">
                     POST
                   </option>
+
                   <option value="PUT">
                     PUT
                   </option>
+
                   <option value="PATCH">
                     PATCH
                   </option>
+
                   <option value="DELETE">
                     DELETE
                   </option>
@@ -1033,9 +1219,15 @@ function EndpointWorkspace({
                 <button
                   type="button"
                   aria-label={
-                    "Clear request history"
+                    t(
+                      "workspace.clearHistory",
+                    )
                   }
-                  title="Clear history"
+                  title={
+                    t(
+                      "workspace.clearHistory",
+                    )
+                  }
                   disabled={
                     clearRequests
                       .isPending
@@ -1107,7 +1299,11 @@ function EndpointWorkspace({
           </section>
 
           <section
-            aria-label="Request inspector"
+            aria-label={
+              t(
+                "workspace.requestInspector",
+              )
+            }
             className={
               "min-h-0 "
               + "lg:col-span-3 "

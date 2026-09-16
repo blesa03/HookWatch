@@ -5,6 +5,9 @@ import {
   useState,
 } from "react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   useMutation,
   useQueryClient,
 } from "@tanstack/react-query";
@@ -36,6 +39,10 @@ export function TestSenderDrawer({
   access,
   onClose,
 }: TestSenderDrawerProps) {
+  const {
+    t,
+  } = useTranslation();
+
   const queryClient =
     useQueryClient();
 
@@ -141,7 +148,7 @@ export function TestSenderDrawer({
                 + "text-zinc-100"
               }
             >
-              Send test request
+              {t("sender.title")}
             </h2>
 
             <p
@@ -150,14 +157,16 @@ export function TestSenderDrawer({
                 + "text-zinc-600"
               }
             >
-              Generate a real capture.
+              {t(
+                "sender.description",
+              )}
             </p>
           </div>
 
           <button
             type="button"
             aria-label={
-              "Close test sender"
+              t("sender.close")
             }
             onClick={onClose}
             className={
@@ -184,7 +193,7 @@ export function TestSenderDrawer({
                 + "text-zinc-500"
               }
             >
-              Method
+              {t("sender.method")}
             </span>
 
             <select
@@ -229,7 +238,9 @@ export function TestSenderDrawer({
                 + "text-zinc-500"
               }
             >
-              Content-Type
+              {t(
+                "sender.contentType",
+              )}
             </span>
 
             <input
@@ -259,7 +270,7 @@ export function TestSenderDrawer({
                 + "text-zinc-500"
               }
             >
-              Body
+              {t("sender.body")}
             </span>
 
             <textarea
@@ -312,7 +323,7 @@ export function TestSenderDrawer({
                 + "text-emerald-400"
               }
             >
-              Captured successfully.
+              {t("sender.success")}
             </p>
           )}
         </div>
@@ -341,8 +352,8 @@ export function TestSenderDrawer({
             }
           >
             {mutation.isPending
-              ? "Sending…"
-              : "Send request"}
+              ? t("sender.sending")
+              : t("sender.send")}
           </button>
         </div>
       </aside>

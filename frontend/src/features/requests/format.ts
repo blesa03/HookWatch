@@ -1,3 +1,8 @@
+import i18n, {
+  getIntlLocale,
+} from "../../i18n";
+
+
 export function formatBytes(
   bytes: number,
 ): string {
@@ -9,7 +14,9 @@ export function formatBytes(
     bytes / 1024;
 
   if (kilobytes < 1024) {
-    return `${kilobytes.toFixed(1)} KB`;
+    return (
+      `${kilobytes.toFixed(1)} KB`
+    );
   }
 
   return `${
@@ -25,5 +32,10 @@ export function formatTimestamp(
 ): string {
   return new Date(
     value,
-  ).toLocaleString();
+  ).toLocaleString(
+    getIntlLocale(
+      i18n.resolvedLanguage
+      ?? i18n.language,
+    ),
+  );
 }

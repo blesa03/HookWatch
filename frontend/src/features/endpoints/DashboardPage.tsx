@@ -11,6 +11,9 @@ import {
   useState,
 } from "react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   useNavigate,
   useSearchParams,
 } from "react-router-dom";
@@ -18,6 +21,9 @@ import {
 import {
   useAuth,
 } from "../auth/useAuth";
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 import {
   AppSidebar,
@@ -71,6 +77,10 @@ function statusClasses(
 export function DashboardPage() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const {
     logout,
@@ -179,26 +189,42 @@ export function DashboardPage() {
                 "size-4 text-cyan-400"
               }
             />
+
             HookWatch
           </div>
 
-          <button
-            type="button"
-            aria-label="Sign out"
-            onClick={() => {
-              void logout().then(() => {
-                navigate("/login");
-              });
-            }}
+          <div
             className={
-              "ml-auto rounded-lg "
-              + "p-2 text-zinc-500 "
-              + "hover:bg-zinc-900 "
-              + "hover:text-zinc-200"
+              "ml-auto flex "
+              + "items-center gap-2"
             }
           >
-            <LogOut className="size-4" />
-          </button>
+            <LanguageSwitcher
+              compact
+            />
+
+            <button
+              type="button"
+              aria-label={
+                t("sidebar.signOut")
+              }
+              onClick={() => {
+                void logout().then(() => {
+                  navigate("/login");
+                });
+              }}
+              className={
+                "rounded-lg "
+                + "p-2 text-zinc-500 "
+                + "hover:bg-zinc-900 "
+                + "hover:text-zinc-200"
+              }
+            >
+              <LogOut
+                className="size-4"
+              />
+            </button>
+          </div>
         </header>
 
         <section
@@ -233,7 +259,9 @@ export function DashboardPage() {
                     + "text-cyan-500"
                   }
                 >
-                  Workspace
+                  {t(
+                    "dashboard.workspace",
+                  )}
                 </p>
 
                 <h1
@@ -243,7 +271,9 @@ export function DashboardPage() {
                     + "tracking-tight"
                   }
                 >
-                  Endpoints
+                  {t(
+                    "dashboard.title",
+                  )}
                 </h1>
 
                 <p
@@ -253,10 +283,9 @@ export function DashboardPage() {
                     + "text-zinc-500"
                   }
                 >
-                  Create ingest URLs,
-                  capture requests and
-                  inspect incoming
-                  webhook traffic.
+                  {t(
+                    "dashboard.description",
+                  )}
                 </p>
               </div>
 
@@ -275,8 +304,13 @@ export function DashboardPage() {
                   + "hover:bg-cyan-300"
                 }
               >
-                <Plus className="size-4" />
-                New endpoint
+                <Plus
+                  className="size-4"
+                />
+
+                {t(
+                  "dashboard.newEndpoint",
+                )}
               </button>
             </div>
 
@@ -384,17 +418,14 @@ export function DashboardPage() {
                             + "text-zinc-600"
                           }
                         >
-                          {
-                            endpoint
-                              .request_count
-                          }{" "}
-                          {
-                            endpoint
-                              .request_count
-                            === 1
-                              ? "request"
-                              : "requests"
-                          }
+                          {t(
+                            "dashboard.requestCount",
+                            {
+                              count:
+                                endpoint
+                                  .request_count,
+                            },
+                          )}
                         </p>
                       </div>
 
@@ -404,13 +435,14 @@ export function DashboardPage() {
                           + "px-2 py-1 "
                           + "text-[10px] "
                           + "font-medium "
-                          + "capitalize "
                           + statusClasses(
                             endpoint.status,
                           )
                         }
                       >
-                        {endpoint.status}
+                        {t(
+                          `common.status.${endpoint.status}`,
+                        )}
                       </span>
                     </div>
 
@@ -444,7 +476,8 @@ export function DashboardPage() {
                     <div
                       className={
                         "mt-auto flex "
-                        + "flex-wrap gap-2 pt-5"
+                        + "flex-wrap "
+                        + "gap-2 pt-5"
                       }
                     >
                       <button
@@ -468,10 +501,14 @@ export function DashboardPage() {
                           + "hover:bg-white"
                         }
                       >
-                        Open
+                        {t(
+                          "dashboard.open",
+                        )}
 
                         <ExternalLink
-                          className="size-3.5"
+                          className={
+                            "size-3.5"
+                          }
                         />
                       </button>
 
@@ -497,9 +534,14 @@ export function DashboardPage() {
                         }
                       >
                         <Pencil
-                          className="size-3.5"
+                          className={
+                            "size-3.5"
+                          }
                         />
-                        Rename
+
+                        {t(
+                          "dashboard.rename",
+                        )}
                       </button>
 
                       <button
@@ -538,19 +580,31 @@ export function DashboardPage() {
                         }
                       >
                         <Power
-                          className="size-3.5"
+                          className={
+                            "size-3.5"
+                          }
                         />
 
                         {endpoint.state
                           === "active"
-                            ? "Disable"
-                            : "Enable"}
+                            ? t(
+                              "dashboard.disable",
+                            )
+                            : t(
+                              "dashboard.enable",
+                            )}
                       </button>
 
                       <button
                         type="button"
                         aria-label={
-                          `Delete ${endpoint.name}`
+                          t(
+                            "dashboard.delete",
+                            {
+                              name:
+                                endpoint.name,
+                            },
+                          )
                         }
                         disabled={
                           deleteEndpoint
@@ -559,15 +613,22 @@ export function DashboardPage() {
                         onClick={() => {
                           if (
                             !window.confirm(
-                              `Delete "${endpoint.name}"?`,
+                              t(
+                                "dashboard.deleteConfirm",
+                                {
+                                  name:
+                                    endpoint.name,
+                                },
+                              ),
                             )
                           ) {
                             return;
                           }
 
-                          deleteEndpoint.mutate(
-                            endpoint.id,
-                          );
+                          deleteEndpoint
+                            .mutate(
+                              endpoint.id,
+                            );
                         }}
                         className={
                           "ml-auto "
@@ -582,7 +643,9 @@ export function DashboardPage() {
                         }
                       >
                         <Trash2
-                          className="size-3.5"
+                          className={
+                            "size-3.5"
+                          }
                         />
                       </button>
                     </div>
@@ -599,7 +662,9 @@ export function DashboardPage() {
                   + "text-zinc-600"
                 }
               >
-                Loading endpoints…
+                {t(
+                  "dashboard.loading",
+                )}
               </div>
             )}
 
@@ -612,7 +677,8 @@ export function DashboardPage() {
                 <div
                   className={
                     "mt-10 rounded-2xl "
-                    + "border border-dashed "
+                    + "border "
+                    + "border-dashed "
                     + "border-zinc-800 "
                     + "px-6 py-16 "
                     + "text-center"
@@ -621,7 +687,8 @@ export function DashboardPage() {
                   <div
                     className={
                       "mx-auto flex "
-                      + "size-11 items-center "
+                      + "size-11 "
+                      + "items-center "
                       + "justify-center "
                       + "rounded-xl "
                       + "bg-zinc-900"
@@ -641,20 +708,22 @@ export function DashboardPage() {
                       + "text-zinc-300"
                     }
                   >
-                    No endpoints yet
+                    {t(
+                      "dashboard.emptyTitle",
+                    )}
                   </h2>
 
                   <p
                     className={
                       "mx-auto mt-2 "
-                      + "max-w-sm text-sm "
+                      + "max-w-sm "
+                      + "text-sm "
                       + "text-zinc-600"
                     }
                   >
-                    Create your first
-                    endpoint and start
-                    capturing HTTP
-                    requests.
+                    {t(
+                      "dashboard.emptyDescription",
+                    )}
                   </p>
 
                   <button
@@ -672,8 +741,13 @@ export function DashboardPage() {
                       + "hover:bg-zinc-900"
                     }
                   >
-                    <Plus className="size-4" />
-                    Create endpoint
+                    <Plus
+                      className="size-4"
+                    />
+
+                    {t(
+                      "dashboard.createEndpoint",
+                    )}
                   </button>
                 </div>
               )}
@@ -683,8 +757,14 @@ export function DashboardPage() {
 
       {showCreate && (
         <EndpointDialog
-          title="Create endpoint"
-          confirmLabel="Create"
+          title={
+            t(
+              "dashboard.createTitle",
+            )
+          }
+          confirmLabel={
+            t("common.create")
+          }
           busy={
             createEndpoint.isPending
           }
@@ -710,11 +790,17 @@ export function DashboardPage() {
 
       {renameEndpoint && (
         <EndpointDialog
-          title="Rename endpoint"
+          title={
+            t(
+              "dashboard.renameTitle",
+            )
+          }
           initialValue={
             renameEndpoint.name
           }
-          confirmLabel="Save"
+          confirmLabel={
+            t("common.save")
+          }
           busy={
             updateEndpoint.isPending
           }

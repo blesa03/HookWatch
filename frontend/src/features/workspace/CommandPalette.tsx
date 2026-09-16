@@ -6,6 +6,9 @@ import {
   useMemo,
   useState,
 } from "react";
+import {
+  useTranslation,
+} from "react-i18next";
 
 
 export interface CommandAction {
@@ -30,6 +33,10 @@ export function CommandPalette({
   actions,
   onClose,
 }: CommandPaletteProps) {
+  const {
+    t,
+  } = useTranslation();
+
   const [
     query,
     setQuery,
@@ -99,7 +106,8 @@ export function CommandPalette({
         "fixed inset-0 z-100 "
         + "flex items-start "
         + "justify-center "
-        + "bg-black/60 px-4 pt-[12vh]"
+        + "bg-black/60 "
+        + "px-4 pt-[12vh]"
       }
       onMouseDown={(event) => {
         if (
@@ -113,18 +121,23 @@ export function CommandPalette({
       <div
         role="dialog"
         aria-modal="true"
-        aria-label="Command palette"
+        aria-label={
+          t("palette.label")
+        }
         className={
           "w-full max-w-xl "
-          + "overflow-hidden rounded-xl "
+          + "overflow-hidden "
+          + "rounded-xl "
           + "border border-zinc-800 "
-          + "bg-zinc-950 shadow-2xl"
+          + "bg-zinc-950 "
+          + "shadow-2xl"
         }
       >
         <div
           className={
             "flex items-center gap-3 "
-            + "border-b border-zinc-800 "
+            + "border-b "
+            + "border-zinc-800 "
             + "px-4"
           }
         >
@@ -138,11 +151,16 @@ export function CommandPalette({
           <input
             autoFocus
             value={query}
-            placeholder="Type a command…"
+            placeholder={
+              t(
+                "palette.placeholder",
+              )
+            }
             onChange={(event) => {
               setQuery(
-                event.target.value
+                event.target.value,
               );
+
               setActiveIndex(0);
             }}
             onKeyDown={(event) => {
@@ -161,7 +179,8 @@ export function CommandPalette({
                 event.preventDefault();
 
                 if (
-                  filtered.length === 0
+                  filtered.length
+                  === 0
                 ) {
                   return;
                 }
@@ -182,7 +201,8 @@ export function CommandPalette({
                 event.preventDefault();
 
                 if (
-                  filtered.length === 0
+                  filtered.length
+                  === 0
                 ) {
                   return;
                 }
@@ -213,7 +233,8 @@ export function CommandPalette({
             }}
             className={
               "h-14 min-w-0 flex-1 "
-              + "bg-transparent text-sm "
+              + "bg-transparent "
+              + "text-sm "
               + "text-zinc-100 "
               + "outline-none "
               + "placeholder:text-zinc-600"
@@ -244,11 +265,14 @@ export function CommandPalette({
             <p
               className={
                 "px-3 py-8 "
-                + "text-center text-sm "
+                + "text-center "
+                + "text-sm "
                 + "text-zinc-600"
               }
             >
-              No matching commands.
+              {t(
+                "palette.noMatches",
+              )}
             </p>
           )}
 
@@ -269,7 +293,8 @@ export function CommandPalette({
                   }
                   className={
                     "flex w-full "
-                    + "items-center gap-3 "
+                    + "items-center "
+                    + "gap-3 "
                     + "rounded-lg px-3 "
                     + "py-3 text-left "
                     + (
@@ -326,8 +351,8 @@ export function CommandPalette({
                   {action.shortcut && (
                     <kbd
                       className={
-                        "shrink-0 rounded "
-                        + "border "
+                        "shrink-0 "
+                        + "rounded border "
                         + "border-zinc-800 "
                         + "bg-zinc-900 "
                         + "px-2 py-1 "

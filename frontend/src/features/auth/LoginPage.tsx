@@ -9,9 +9,16 @@ import {
   useForm,
 } from "react-hook-form";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   Link,
   useNavigate,
 } from "react-router-dom";
+
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 import {
   useAuth,
@@ -27,6 +34,10 @@ interface FormValues {
 export function LoginPage() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const {
     login,
@@ -65,7 +76,7 @@ export function LoginPage() {
       setError(
         err instanceof Error
           ? err.message
-          : "Login failed.",
+          : t("auth.loginFailed"),
       );
     }
   };
@@ -83,19 +94,31 @@ export function LoginPage() {
       }
     >
       <div className="w-full max-w-md">
-        <Link
-          to="/"
+        <div
           className={
-            "mb-8 inline-flex "
-            + "items-center gap-2 "
-            + "text-sm text-zinc-500 "
-            + "transition-colors "
-            + "hover:text-zinc-200"
+            "mb-8 flex items-center "
+            + "justify-between gap-4"
           }
         >
-          <ArrowLeft className="size-4" />
-          Back to HookWatch
-        </Link>
+          <Link
+            to="/"
+            className={
+              "inline-flex items-center "
+              + "gap-2 text-sm "
+              + "text-zinc-500 "
+              + "transition-colors "
+              + "hover:text-zinc-200"
+            }
+          >
+            <ArrowLeft
+              className="size-4"
+            />
+
+            {t("auth.back")}
+          </Link>
+
+          <LanguageSwitcher compact />
+        </div>
 
         <section
           className={
@@ -131,17 +154,19 @@ export function LoginPage() {
               + "tracking-tight"
             }
           >
-            Sign in
+            {t("auth.signInTitle")}
           </h1>
 
           <p
             className={
               "mt-2 text-sm "
-              + "leading-6 text-zinc-500"
+              + "leading-6 "
+              + "text-zinc-500"
             }
           >
-            Continue to your
-            HookWatch endpoints.
+            {t(
+              "auth.signInDescription",
+            )}
           </p>
 
           <form
@@ -158,7 +183,7 @@ export function LoginPage() {
                   + "text-zinc-300"
                 }
               >
-                Email
+                {t("auth.email")}
               </span>
 
               <input
@@ -181,13 +206,17 @@ export function LoginPage() {
                   + "focus:border-cyan-700"
                 }
                 placeholder={
-                  "you@example.com"
+                  t(
+                    "auth.emailPlaceholder",
+                  )
                 }
                 {...register(
                   "email",
                   {
                     required:
-                      "Email is required.",
+                      t(
+                        "auth.emailRequired",
+                      ),
                   },
                 )}
               />
@@ -212,7 +241,7 @@ export function LoginPage() {
                   + "text-zinc-300"
                 }
               >
-                Password
+                {t("auth.password")}
               </span>
 
               <input
@@ -241,7 +270,9 @@ export function LoginPage() {
                   "password",
                   {
                     required:
-                      "Password is required.",
+                      t(
+                        "auth.passwordRequired",
+                      ),
                   },
                 )}
               />
@@ -293,8 +324,8 @@ export function LoginPage() {
               }
             >
               {isSubmitting
-                ? "Signing in…"
-                : "Sign in"}
+                ? t("auth.signingIn")
+                : t("auth.signIn")}
             </button>
           </form>
 
@@ -304,7 +335,7 @@ export function LoginPage() {
               + "text-sm text-zinc-500"
             }
           >
-            No account?{" "}
+            {t("auth.noAccount")}{" "}
 
             <Link
               to="/register"
@@ -314,7 +345,7 @@ export function LoginPage() {
                 + "hover:text-cyan-300"
               }
             >
-              Create one
+              {t("auth.createOne")}
             </Link>
           </p>
         </section>

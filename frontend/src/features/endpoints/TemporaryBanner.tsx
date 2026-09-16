@@ -6,12 +6,16 @@ import {
   useState,
 } from "react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   useNavigate,
 } from "react-router-dom";
 
 
 function remainingTime(
   expiresAt: string,
+  expiredLabel: string,
 ): string {
   const remaining =
     new Date(
@@ -20,7 +24,7 @@ function remainingTime(
     - Date.now();
 
   if (remaining <= 0) {
-    return "Expired";
+    return expiredLabel;
   }
 
   const hours = Math.floor(
@@ -46,6 +50,11 @@ export function TemporaryBanner({
   const navigate =
     useNavigate();
 
+  const {
+    t,
+    i18n,
+  } = useTranslation();
+
   const [
     remaining,
     setRemaining,
@@ -53,28 +62,42 @@ export function TemporaryBanner({
     () =>
       remainingTime(
         expiresAt,
+        t("temporary.expired"),
       ),
   );
 
 
   useEffect(() => {
+    const updateRemaining =
+      () => {
+        setRemaining(
+          remainingTime(
+            expiresAt,
+            t(
+              "temporary.expired",
+            ),
+          ),
+        );
+      };
+
+    updateRemaining();
+
     const interval =
       window.setInterval(
-        () => {
-          setRemaining(
-            remainingTime(
-              expiresAt,
-            ),
-          );
-        },
+        updateRemaining,
         30_000,
       );
 
-    return () =>
+    return () => {
       window.clearInterval(
         interval,
       );
-  }, [expiresAt]);
+    };
+  }, [
+    expiresAt,
+    i18n.resolvedLanguage,
+    t,
+  ]);
 
 
   return (
@@ -97,10 +120,13 @@ export function TemporaryBanner({
           + "items-center gap-2"
         }
       >
-        <Clock3 className="size-3.5" />
+        <Clock3
+          className="size-3.5"
+        />
 
-        Temporary endpoint
-        · {remaining}
+        {t("temporary.label")}
+        {" · "}
+        {remaining}
       </span>
 
       <button
@@ -115,7 +141,7 @@ export function TemporaryBanner({
           + "hover:text-amber-200"
         }
       >
-        Create account to keep it
+        {t("temporary.keep")}
       </button>
     </div>
   );

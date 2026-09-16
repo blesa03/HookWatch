@@ -2,6 +2,9 @@ import {
   LoaderCircle,
 } from "lucide-react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   Navigate,
   Outlet,
 } from "react-router-dom";
@@ -12,6 +15,10 @@ import {
 
 
 export function ProtectedRoute() {
+  const {
+    t,
+  } = useTranslation();
+
   const {
     user,
     isLoading,
@@ -35,7 +42,9 @@ export function ProtectedRoute() {
           }
         />
 
-        Restoring session…
+        {t(
+          "auth.restoringSession",
+        )}
       </div>
     );
   }

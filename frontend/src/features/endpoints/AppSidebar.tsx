@@ -4,6 +4,9 @@ import {
   Webhook,
 } from "lucide-react";
 import {
+  useTranslation,
+} from "react-i18next";
+import {
   NavLink,
   useNavigate,
 } from "react-router-dom";
@@ -11,6 +14,9 @@ import {
 import {
   useAuth,
 } from "../auth/useAuth";
+import {
+  LanguageSwitcher,
+} from "../i18n/LanguageSwitcher";
 
 import {
   useEndpoints,
@@ -20,6 +26,10 @@ import {
 export function AppSidebar() {
   const navigate =
     useNavigate();
+
+  const {
+    t,
+  } = useTranslation();
 
   const {
     logout,
@@ -34,7 +44,8 @@ export function AppSidebar() {
       className={
         "hidden h-full w-64 "
         + "shrink-0 flex-col "
-        + "border-r border-zinc-800/80 "
+        + "border-r "
+        + "border-zinc-800/80 "
         + "bg-zinc-950/95 lg:flex"
       }
     >
@@ -93,13 +104,14 @@ export function AppSidebar() {
           }
         >
           <Plus className="size-4" />
-          New endpoint
+
+          {t("sidebar.newEndpoint")}
         </button>
       </div>
 
       <nav
         aria-label={
-          "Application navigation"
+          t("sidebar.navigation")
         }
         className={
           "min-h-0 flex-1 "
@@ -110,13 +122,12 @@ export function AppSidebar() {
           className={
             "px-3 pb-2 pt-2 "
             + "text-[10px] "
-            + "font-semibold "
-            + "uppercase "
+            + "font-semibold uppercase "
             + "tracking-[0.16em] "
             + "text-zinc-700"
           }
         >
-          Workspace
+          {t("sidebar.workspace")}
         </p>
 
         <NavLink
@@ -147,20 +158,22 @@ export function AppSidebar() {
           }
         >
           <Webhook className="size-4" />
-          Endpoints
+
+          {t("sidebar.endpoints")}
         </NavLink>
 
         <p
           className={
             "mt-5 px-3 pb-2 "
             + "text-[10px] "
-            + "font-semibold "
-            + "uppercase "
+            + "font-semibold uppercase "
             + "tracking-[0.16em] "
             + "text-zinc-700"
           }
         >
-          Your endpoints
+          {t(
+            "sidebar.yourEndpoints",
+          )}
         </p>
 
         <div className="space-y-0.5">
@@ -214,13 +227,19 @@ export function AppSidebar() {
                   }
                 />
 
-                <span className="min-w-0 flex-1 truncate">
+                <span
+                  className={
+                    "min-w-0 "
+                    + "flex-1 truncate"
+                  }
+                >
                   {endpoint.name}
                 </span>
 
                 <span
                   className={
-                    "font-mono text-[10px] "
+                    "font-mono "
+                    + "text-[10px] "
                     + "text-zinc-700"
                   }
                 >
@@ -234,10 +253,12 @@ export function AppSidebar() {
 
       <div
         className={
-          "border-t "
+          "space-y-2 border-t "
           + "border-zinc-800/80 p-3"
         }
       >
+        <LanguageSwitcher />
+
         <button
           type="button"
           onClick={() => {
@@ -246,8 +267,9 @@ export function AppSidebar() {
             });
           }}
           className={
-            "flex w-full items-center "
-            + "gap-2.5 rounded-lg "
+            "flex w-full "
+            + "items-center gap-2.5 "
+            + "rounded-lg "
             + "px-3 py-2.5 "
             + "text-sm text-zinc-500 "
             + "transition-colors "
@@ -256,7 +278,8 @@ export function AppSidebar() {
           }
         >
           <LogOut className="size-4" />
-          Sign out
+
+          {t("sidebar.signOut")}
         </button>
       </div>
     </aside>

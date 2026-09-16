@@ -7,6 +7,9 @@ import {
   Inbox,
   LoaderCircle,
 } from "lucide-react";
+import {
+  useTranslation,
+} from "react-i18next";
 
 import {
   MethodBadge,
@@ -58,6 +61,10 @@ export function RequestList({
   onLoadMore,
   ingestUrl,
 }: RequestListProps) {
+  const {
+    t,
+  } = useTranslation();
+
   const selectedRef =
     useRef<HTMLButtonElement | null>(
       null,
@@ -88,7 +95,7 @@ export function RequestList({
           }
         />
 
-        Loading requests…
+        {t("requests.loading")}
       </div>
     );
   }
@@ -133,7 +140,8 @@ export function RequestList({
       >
         <div
           className={
-            "flex size-11 items-center "
+            "flex size-11 "
+            + "items-center "
             + "justify-center "
             + "rounded-xl border "
             + "border-zinc-800 "
@@ -153,7 +161,9 @@ export function RequestList({
             + "text-zinc-300"
           }
         >
-          Waiting for requests
+          {t(
+            "requests.waitingTitle",
+          )}
         </p>
 
         <p
@@ -163,9 +173,9 @@ export function RequestList({
             + "text-zinc-600"
           }
         >
-          Send an HTTP request to
-          this endpoint and it will
-          appear here automatically.
+          {t(
+            "requests.waitingDescription",
+          )}
         </p>
 
         <pre
@@ -193,7 +203,7 @@ export function RequestList({
         "h-full overflow-y-auto"
       }
       aria-label={
-        "Captured requests"
+        t("requests.captured")
       }
     >
       {requests.map((request) => {
@@ -332,8 +342,12 @@ export function RequestList({
             }
           >
             {isFetchingNextPage
-              ? "Loading…"
-              : "Load older requests"}
+              ? t(
+                "requests.loadingOlder",
+              )
+              : t(
+                "requests.loadOlder",
+              )}
           </button>
         </div>
       )}

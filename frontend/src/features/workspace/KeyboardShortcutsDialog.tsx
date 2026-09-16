@@ -1,62 +1,9 @@
 import {
   X,
 } from "lucide-react";
-
-
-const shortcuts = [
-  [
-    "P",
-    "Command palette",
-  ],
-  [
-    "F",
-    "Focus Mode",
-  ],
-  [
-    "/",
-    "Focus request search",
-  ],
-  [
-    "J / ↓",
-    "Next request",
-  ],
-  [
-    "K / ↑",
-    "Previous request",
-  ],
-  [
-    "1",
-    "Overview",
-  ],
-  [
-    "2",
-    "Headers",
-  ],
-  [
-    "3",
-    "Body",
-  ],
-  [
-    "4",
-    "Query",
-  ],
-  [
-    "5",
-    "Raw",
-  ],
-  [
-    "T",
-    "Send test request",
-  ],
-  [
-    "?",
-    "Keyboard shortcuts",
-  ],
-  [
-    "Esc",
-    "Close / leave Focus Mode",
-  ],
-];
+import {
+  useTranslation,
+} from "react-i18next";
 
 
 export function KeyboardShortcutsDialog({
@@ -64,11 +11,76 @@ export function KeyboardShortcutsDialog({
 }: {
   onClose: () => void;
 }) {
+  const {
+    t,
+  } = useTranslation();
+
+  const shortcuts = [
+    [
+      "P",
+      t(
+        "shortcuts.commandPalette",
+      ),
+    ],
+    [
+      "F",
+      t("shortcuts.focusMode"),
+    ],
+    [
+      "/",
+      t("shortcuts.focusSearch"),
+    ],
+    [
+      "J / ↓",
+      t("shortcuts.nextRequest"),
+    ],
+    [
+      "K / ↑",
+      t(
+        "shortcuts.previousRequest",
+      ),
+    ],
+    [
+      "1",
+      t("shortcuts.overview"),
+    ],
+    [
+      "2",
+      t("shortcuts.headers"),
+    ],
+    [
+      "3",
+      t("shortcuts.body"),
+    ],
+    [
+      "4",
+      t("shortcuts.query"),
+    ],
+    [
+      "5",
+      t("shortcuts.raw"),
+    ],
+    [
+      "T",
+      t("shortcuts.sendTest"),
+    ],
+    [
+      "?",
+      t(
+        "shortcuts.keyboardShortcuts",
+      ),
+    ],
+    [
+      "Esc",
+      t("shortcuts.escape"),
+    ],
+  ];
+
+
   return (
     <div
       className={
-        "fixed inset-0 "
-        + "z-100"
+        "fixed inset-0 z-100 "
         + "flex items-center "
         + "justify-center "
         + "bg-black/60 p-4"
@@ -86,7 +98,7 @@ export function KeyboardShortcutsDialog({
         role="dialog"
         aria-modal="true"
         aria-label={
-          "Keyboard shortcuts"
+          t("shortcuts.title")
         }
         className={
           "w-full max-w-lg "
@@ -108,7 +120,7 @@ export function KeyboardShortcutsDialog({
                 + "text-zinc-100"
               }
             >
-              Keyboard shortcuts
+              {t("shortcuts.title")}
             </h2>
 
             <p
@@ -117,15 +129,20 @@ export function KeyboardShortcutsDialog({
                 + "text-zinc-600"
               }
             >
-              Navigate HookWatch
-              without leaving the
-              keyboard.
+              {t(
+                "shortcuts.description",
+              )}
             </p>
           </div>
 
           <button
             type="button"
-            title="Close"
+            title={
+              t("shortcuts.close")
+            }
+            aria-label={
+              t("shortcuts.close")
+            }
             onClick={
               onClose
             }

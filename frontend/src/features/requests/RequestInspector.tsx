@@ -3,6 +3,9 @@ import {
   LoaderCircle,
   Trash2,
 } from "lucide-react";
+import {
+  useTranslation,
+} from "react-i18next";
 
 import {
   MethodBadge,
@@ -49,11 +52,14 @@ interface RequestInspectorProps {
 
 function KeyValueTable({
   entries,
+  emptyLabel,
 }: {
   entries:
     Array<
       [string, string]
     >;
+
+  emptyLabel: string;
 }) {
   if (entries.length === 0) {
     return (
@@ -62,7 +68,7 @@ function KeyValueTable({
           "text-sm text-zinc-500"
         }
       >
-        No values.
+        {emptyLabel}
       </p>
     );
   }
@@ -81,7 +87,8 @@ function KeyValueTable({
             key={`${key}-${value}`}
             className={
               "grid grid-cols-1 "
-              + "border-b border-zinc-800 "
+              + "border-b "
+              + "border-zinc-800 "
               + "last:border-b-0 "
               + "sm:grid-cols-[minmax(140px,220px)_1fr]"
             }
@@ -128,6 +135,11 @@ export function RequestInspector({
   onDelete,
   isDeleting,
 }: RequestInspectorProps) {
+  const {
+    t,
+  } = useTranslation();
+
+
   if (!hasSelection) {
     return (
       <div
@@ -139,7 +151,7 @@ export function RequestInspector({
           + "text-sm text-zinc-600"
         }
       >
-        Select a request to inspect it.
+        {t("requests.select")}
       </div>
     );
   }
@@ -160,7 +172,9 @@ export function RequestInspector({
           }
         />
 
-        Loading request…
+        {t(
+          "requests.loadingRequest",
+        )}
       </div>
     );
   }
@@ -188,6 +202,7 @@ export function RequestInspector({
     return null;
   }
 
+
   const tabs:
     Array<{
       id: InspectorTab;
@@ -196,27 +211,42 @@ export function RequestInspector({
     }> = [
       {
         id: "overview",
-        label: "Overview",
+        label:
+          t(
+            "requests.tabs.overview",
+          ),
         shortcut: "1",
       },
       {
         id: "headers",
-        label: "Headers",
+        label:
+          t(
+            "requests.tabs.headers",
+          ),
         shortcut: "2",
       },
       {
         id: "body",
-        label: "Body",
+        label:
+          t(
+            "requests.tabs.body",
+          ),
         shortcut: "3",
       },
       {
         id: "query",
-        label: "Query",
+        label:
+          t(
+            "requests.tabs.query",
+          ),
         shortcut: "4",
       },
       {
         id: "raw",
-        label: "Raw",
+        label:
+          t(
+            "requests.tabs.raw",
+          ),
         shortcut: "5",
       },
     ];
@@ -252,7 +282,7 @@ export function RequestInspector({
           <button
             type="button"
             aria-label={
-              "Back to request list"
+              t("requests.back")
             }
             onClick={onBack}
             className={
@@ -289,9 +319,11 @@ export function RequestInspector({
           <button
             type="button"
             aria-label={
-              "Delete request"
+              t("requests.delete")
             }
-            title="Delete request"
+            title={
+              t("requests.delete")
+            }
             disabled={isDeleting}
             onClick={onDelete}
             className={
@@ -312,7 +344,7 @@ export function RequestInspector({
       <div
         role="tablist"
         aria-label={
-          "Request inspector"
+          t("requests.inspector")
         }
         className={
           "flex shrink-0 gap-1 "
@@ -389,19 +421,31 @@ export function RequestInspector({
             }
           >
             <InfoCard
-              label="Method"
+              label={
+                t(
+                  "requests.info.method",
+                )
+              }
               value={request.method}
             />
 
             <InfoCard
-              label="Received"
+              label={
+                t(
+                  "requests.info.received",
+                )
+              }
               value={formatTimestamp(
                 request.received_at,
               )}
             />
 
             <InfoCard
-              label="Content type"
+              label={
+                t(
+                  "requests.info.contentType",
+                )
+              }
               value={
                 request.content_type
                 || "—"
@@ -409,14 +453,22 @@ export function RequestInspector({
             />
 
             <InfoCard
-              label="Body size"
+              label={
+                t(
+                  "requests.info.bodySize",
+                )
+              }
               value={formatBytes(
                 request.body_size,
               )}
             />
 
             <InfoCard
-              label="Source IP"
+              label={
+                t(
+                  "requests.info.sourceIp",
+                )
+              }
               value={
                 request.source_ip
                 ?? "—"
@@ -424,7 +476,11 @@ export function RequestInspector({
             />
 
             <InfoCard
-              label="Request ID"
+              label={
+                t(
+                  "requests.info.requestId",
+                )
+              }
               value={request.id}
             />
           </div>
@@ -437,12 +493,18 @@ export function RequestInspector({
                 request.headers,
               )
             }
+            emptyLabel={
+              t("requests.noValues")
+            }
           />
         )}
 
         {activeTab === "query" && (
           <KeyValueTable
             entries={queryEntries}
+            emptyLabel={
+              t("requests.noValues")
+            }
           />
         )}
 
@@ -469,7 +531,9 @@ export function RequestInspector({
                 }
               >
                 {request.body.raw
-                  || "Empty body"}
+                  || t(
+                    "requests.emptyBody",
+                  )}
               </pre>
             )
         )}
@@ -485,7 +549,9 @@ export function RequestInspector({
             }
           >
             {request.body.raw
-              || "Empty body"}
+              || t(
+                "requests.emptyBody",
+              )}
           </pre>
         )}
       </div>
